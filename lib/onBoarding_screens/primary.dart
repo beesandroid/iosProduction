@@ -43,7 +43,7 @@ class _InitialBoardingScreenState extends State<PrimaryBoardingScreen> {
                       Padding(
                         padding: EdgeInsets.only(top: 15.0, left: 15),
                         child: Text(
-                          "Track Progress Easily &amp; Quickly",
+                          "Track Progress Easily & Quickly",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 25,
