@@ -52,6 +52,6 @@
 	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
 
-        <string>This app requires access to your photo library to allow you to upload and share photos.</string>
+        <string>BETPlus app requires access to your photo library to allow you to upload and share photos.</string>
 </dict>
 </plist>
