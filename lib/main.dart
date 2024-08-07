@@ -6,15 +6,26 @@ import 'package:betplus_ios/views/NewLogin.dart';
 import 'package:betplus_ios/views/PROVIDER.dart';
 
 import 'package:betplus_ios/views/splashscreen.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'fcm.dart';
+import 'firebase_options.dart';
 import 'onBoarding_screens/onboardingscreen.dart';
 
-void main() {
+void main() async  {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  final notificationHandler = NotificationHandler();
+  notificationHandler.init();
+
   runApp(
     ChangeNotifierProvider(
       create: (_) => UserProvider(),
@@ -172,12 +183,21 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
             prefs.setString(key, value.toString());
           }
         });
+        final notificationHandler = NotificationHandler();
+        await notificationHandler.init(); // Ensure token is fetched
+        String? token = await FirebaseMessaging.instance.getToken();
+        if (token != null) {
+          await notificationHandler.saveTokenToServer(token);
+        } else {
+          print('Failed to get FCM token');
+        }
 
         // Navigate to the next screen if login is successful
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Profile()),
         );
+
         showToast('Login Successfully',
             context: context); // Show success message
       } else {

@@ -111,6 +111,7 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
 
         final List<dynamic> transactionDataList =
         responseData['saveSupplyFeeTempDataList'];
+        print(responseData);
 
         for (var transactionData in transactionDataList) {
           final studFee = transactionData['StudFee'];
@@ -121,7 +122,6 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
           final AtomTransId = transactionData['AtomTransId'].toString();
           final examMonth = transactionData['regExamMonth'];
 
-          // Pass the extracted data to initiatePaytmTransaction method
           initiatePaytmTransaction(transactionData, newTxnId, AtomTransId,
               supplyFeeDetails, suppExamMonth, captcha.toString());
         }

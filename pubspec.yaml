@@ -64,6 +64,9 @@ dependencies:
   flutter_pdfview:
   font_awesome_flutter:
   palette_generator: ^0.3.0
+  firebase_core:
+
+  firebase_messaging:
 
 
 dev_dependencies:

@@ -659,8 +659,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
           "ExamMonth": '${studFeeDetails.regExamMonth ?? ''}',
         }),
       );
-
-      if (response.statusCode == 200) {
+ if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         if (responseData.containsKey('singleSaveRegularFeeTempDataList')) {
           final Map<String, dynamic> singleSaveRegularFeeTempDataList =
@@ -670,9 +669,6 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
               singleSaveRegularFeeTempDataList['AtomTransId'].toString();
           final examMonth = singleSaveRegularFeeTempDataList['regExamMonth'];
           final sem = singleSaveRegularFeeTempDataList['Sem'];
-
-// print("sssssssssss"+responseData['singleSaveRegularFeeTempDataList']['newTxnId']);
-          // Start the transaction with obtained data
           _startTransaction(singleSaveRegularFeeTempDataList, newTxnId,
               AtomTransId, studFeeDetails, captcha);
         } else {

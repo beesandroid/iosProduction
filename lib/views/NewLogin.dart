@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import 'otp.dart';
@@ -25,6 +26,11 @@ class _NewLoginState extends State<NewLogin> {
   final String collegeId = "0001";
   final String collegeCode = "PSS";
 
+
+
+
+
+
   Future<void> fetchDataFirst() async {
     try {
       final response = await http.post(
@@ -42,32 +48,53 @@ class _NewLoginState extends State<NewLogin> {
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
+        print(jsonResponse.toString());
 
-        // Check if jsonResponse is an array with exactly one object with specific keys
+        // Scenario 1: "User Already registered"
         if (jsonResponse is List &&
             jsonResponse.length == 1 &&
-            jsonResponse[0] is Map<String, dynamic>) {
-          final firstObject = jsonResponse[0];
-          if (firstObject.containsKey('message') &&
-              firstObject['message'] == 'No Mobile Number found' &&
-              firstObject.containsKey('status') &&
-              firstObject['status'] == 1) {
-            final message = firstObject['message'];
-            Fluttertoast.showToast(
-              msg: message,
-              toastLength: Toast.LENGTH_LONG,
-              gravity: ToastGravity.BOTTOM,
-              timeInSecForIosWeb: 1,
-              backgroundColor: Colors.white,
-              textColor: Colors.black,
-              fontSize: 16.0,
-            );
-            print(message);
-            return; // Exit function gracefully since this is a valid scenario
-          }
+            jsonResponse[0] is Map<String, dynamic> &&
+            jsonResponse[0].containsKey('message') &&
+            jsonResponse[0]['message'] == 'User Already registered' &&
+            jsonResponse[0].containsKey('status') &&
+            jsonResponse[0]['status'] == 1) {
+          final message = jsonResponse[0]['message'];
+          Fluttertoast.showToast(
+            msg: message,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            fontSize: 16.0,
+          );
+          print(message);
+          return; // Exit function gracefully since this is a valid scenario
         }
 
-        // Continue with your existing logic for handling other types of responses
+        // Scenario 2: "No data found"
+        if (jsonResponse is List &&
+            jsonResponse.length == 1 &&
+            jsonResponse[0] is Map<String, dynamic> &&
+            jsonResponse[0].containsKey('message') &&
+            jsonResponse[0]['message'] == 'No data found' &&
+            jsonResponse[0].containsKey('status') &&
+            jsonResponse[0]['status'] == 1) {
+          final message = jsonResponse[0]['message'];
+          Fluttertoast.showToast(
+            msg: message,
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.white,
+            textColor: Colors.black,
+            fontSize: 16.0,
+          );
+          print(message);
+          return; // Exit function gracefully since this is a valid scenario
+        }
+
+        // Scenario 3: "Message accepted successfully" with OTP
         if (jsonResponse.containsKey('value')) {
           final value = jsonResponse['value'];
           if (value != null &&
@@ -77,7 +104,7 @@ class _NewLoginState extends State<NewLogin> {
             if (value['statusCode'] == '200' && value['status'] == true) {
               final otp = value['otp'].toString();
               Fluttertoast.showToast(
-                msg: "OTP Sent Successfully! OTP",
+                msg: "OTP Sent Successfully! OTP: $otp",
                 toastLength: Toast.LENGTH_LONG,
                 gravity: ToastGravity.BOTTOM,
                 timeInSecForIosWeb: 1,
@@ -95,35 +122,19 @@ class _NewLoginState extends State<NewLogin> {
                     groupCode: grpCode.text,
                     phoneNumber: phoneNumber.text,
                     value: value,
-                    userName:
-                        value['username'] ?? '', // Pass the entire value object
+                    userName: value['username'] ?? '', // Pass the entire value object
                   ),
                 ),
               );
+              return; // Exit function gracefully since this is a valid scenario
             } else {
-              print(
-                  "Unexpected statusCode or status: ${value['statusCode']}, ${value['status']}");
+              print("Unexpected statusCode or status: ${value['statusCode']}, ${value['status']}");
               throw Exception('Unexpected response from server');
             }
           } else {
             print("Invalid response structure: $jsonResponse");
             throw Exception('Failed to load data from first API');
           }
-        } else if (jsonResponse is List &&
-            jsonResponse.isNotEmpty &&
-            jsonResponse[0].containsKey('message')) {
-          // Handle the case when no data is found
-          final message = jsonResponse[0]['message'];
-          Fluttertoast.showToast(
-            msg: message,
-            toastLength: Toast.LENGTH_LONG,
-            gravity: ToastGravity.BOTTOM,
-            timeInSecForIosWeb: 1,
-            backgroundColor: Colors.white,
-            textColor: Colors.black,
-            fontSize: 16.0,
-          );
-          print(message);
         } else {
           print("Invalid response structure: $jsonResponse");
           throw Exception('Failed to load data from first API');
@@ -135,7 +146,7 @@ class _NewLoginState extends State<NewLogin> {
     } catch (e) {
       print("Error: $e");
       Fluttertoast.showToast(
-        msg: "User already registered!",
+        msg: "Enter Valid Group Code and Mobile Number",
         toastLength: Toast.LENGTH_SHORT,
         gravity: ToastGravity.BOTTOM,
         timeInSecForIosWeb: 1,
@@ -145,6 +156,7 @@ class _NewLoginState extends State<NewLogin> {
       );
     }
   }
+
 
   Future<void> fetchGroupPhoto(String groupCode) async {
     final apiUrl = 'https://beessoftware.cloud/CoreApi/Android/GetClgLogo';
@@ -178,6 +190,15 @@ class _NewLoginState extends State<NewLogin> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(backgroundColor: Colors.lightGreen,
+
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back,color: Colors.white,),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Stack(
         children: [
           Positioned(
@@ -205,7 +226,7 @@ class _NewLoginState extends State<NewLogin> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top: 50.0, bottom: 50),
+                      padding: const EdgeInsets.only(top: 20.0, bottom: 50),
                       child: Stack(
                         alignment: Alignment.center,
                         children: [

@@ -39,7 +39,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     String apiUrl = 'https://beessoftware.cloud/CoreAPI/Flutter/MenuDetails';
     Map<String, dynamic> requestBody = {
       'grpCode': grpCode,
-      "ColCode": collegeId,
+      "ColCode": colCode,
       "CollegeId": collegeId,
       "Category": "Downloads"
     };
@@ -51,7 +51,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
       },
       body: jsonEncode(requestBody),
     );
-
+print(requestBody);
     if (response.statusCode == 200) {
       final dynamic data = jsonDecode(response.body);
 

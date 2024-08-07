@@ -120,7 +120,9 @@ class _ReevaluationState extends State<Reevaluation> {
 
     // Handle response
     if (response.statusCode == 200) {
+
       final responseData = jsonDecode(response.body);
+      print(responseData);
       if (responseData['reValuationShowFeeDetailsList'] != null &&
           responseData['reValuationShowFeeDetailsList'].isNotEmpty) {
         final feeDetails = responseData['reValuationShowFeeDetailsList'][0];

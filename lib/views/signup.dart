@@ -74,6 +74,7 @@ class _SignUpState extends State<SignUp> {
             fee = responseBody['singlRegistrationFeeDisplayList']
                     ['registrationFee']
                 .toString();
+            print("ffffffff"+fee);
           });
         }
       }

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,6 +9,8 @@ import '../Appdrawer/customDrawer.dart';
 import '../Fee_payment/regular_payment.dart';
 import '../Marks_Details/overallperf.dart';
 import '../Marks_Details/overallperformance.dart';
+import '../fcm.dart';
+import '../firebase_options.dart';
 import '../views/DueSubjects.dart';
 import '../views/reportIssues.dart';
 
@@ -48,6 +51,8 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     _fetchDashboardData();
     _fetchProfileData();
+
+
   }
 
   @override
@@ -514,8 +519,52 @@ class _DashboardState extends State<Dashboard> {
   }
 }
 
+class SaveTokenToServer {
+  Future<void> _saveTokenToServer(String token) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String grpCodeValue = prefs.getString('grpCode') ?? '';
+    String colCode = prefs.getString('colCode') ?? '';
+    String collegeId = prefs.getString('collegeId') ?? '';
+    String admnNo = prefs.getString('admnNo') ?? '';
+    String betStudMobile = prefs.getString('betStudMobile') ?? '';
+    const url = 'https://beessoftware.cloud/CoreAPI/Android/FMCTokenSaving';
+    final Map<String, String> headers = {'Content-Type': 'application/json'};
+    final Map<String, dynamic> body = {
+      "GrpCode": grpCodeValue,
+      "CollegeId": collegeId,
+      "ColCode": colCode,
+      "Admnno": admnNo,
+      "Token": token,
+      "Flag": "0"
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: headers,
+        body: json.encode(body),
+      );
+
+      if (response.statusCode == 200) {
+        // Handle successful response
+        print('Token saved successfully');
+      } else {
+        // Handle server error
+        print('Failed to save token. Status code: ${response.statusCode}');
+        print('Response body: ${response.body}');
+      }
+    } catch (e) {
+      // Handle network or other errors
+      print('Error saving token: $e');
+    }
+  }
+}
+
+
 void main() {
+
   runApp(const MaterialApp(
+
     home: Dashboard(),
   ));
 }
