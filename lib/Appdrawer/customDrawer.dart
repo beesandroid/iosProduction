@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../Appdrawer/student_info.dart';
 import '../main.dart';
 import '../views/PROVIDER.dart';
+import '../views/splashscreen.dart';
 import 'Feedback.dart';
 
 class CustomDrawer extends StatefulWidget {
@@ -81,11 +82,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MyApp()),
-                ); // Navigate to the desired screen
+                logout(); // Navigate to the desired screen
               },
               child: Text("Yes"),
             ),
@@ -191,4 +188,13 @@ class _CustomDrawerState extends State<CustomDrawer> {
       ),
     );
   }
+  Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.remove('isLoggedIn');
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => SplashScreen()), // Redirect to splash screen or login screen
+    );
+  }
+
 }

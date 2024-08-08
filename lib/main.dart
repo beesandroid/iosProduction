@@ -18,24 +18,29 @@ import 'fcm.dart';
 import 'firebase_options.dart';
 import 'onBoarding_screens/onboardingscreen.dart';
 
-void main() async  {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
   final notificationHandler = NotificationHandler();
   notificationHandler.init();
+
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
   runApp(
     ChangeNotifierProvider(
       create: (_) => UserProvider(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: SplashScreen(),
+        home: isLoggedIn ? Profile() : SplashScreen(), // Navigate based on login state
       ),
     ),
   );
 }
+
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -183,6 +188,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
             prefs.setString(key, value.toString());
           }
         });
+        prefs.setBool('isLoggedIn', true);
         final notificationHandler = NotificationHandler();
         await notificationHandler.init(); // Ensure token is fetched
         String? token = await FirebaseMessaging.instance.getToken();

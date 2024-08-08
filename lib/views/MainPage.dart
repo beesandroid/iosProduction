@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Import services library
@@ -7,8 +6,6 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:intl/date_symbol_data_local.dart';
-import '../Appdrawer/Feedback.dart';
-import '../Appdrawer/student_info.dart';
 import '../BottomNavigation_Screens/Dashboard.dart';
 import '../BottomNavigation_Screens/Downloads.dart';
 import '../BottomNavigation_Screens/ExamTimeTable.dart';
@@ -69,22 +66,22 @@ class _ProfileState extends State<Profile> {
   Future<bool> _onWillPop() async {
     // Return true to allow popping, false to prevent it
     return await showDialog(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Are you sure?'),
-        content: Text('Do you want to exit the app?'),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: Text('No'),
+          context: context,
+          builder: (context) => AlertDialog(
+            title: Text('Are you sure?'),
+            content: Text('Do you want to exit the a?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: Text('No'),
+              ),
+              TextButton(
+                onPressed: () => SystemNavigator.pop(), // Exit the app
+                child: Text('Yes'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => SystemNavigator.pop(), // Exit the app
-            child: Text('Yes'),
-          ),
-        ],
-      ),
-    ) ??
+        ) ??
         false;
   }
 
@@ -93,91 +90,6 @@ class _ProfileState extends State<Profile> {
     return WillPopScope(
       onWillPop: _onWillPop,
       child: Scaffold(
-        drawer: Drawer(
-          child: ListView(
-            children: [
-              DrawerHeader(
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                    ),
-                  ],
-                ),
-              ),
-              ListTile(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const student_profile(),
-                    ),
-                  );
-                },
-                leading: const Icon(
-                  Icons.person,
-                  color: Color(0xFF13497B),
-                ),
-                title: const Text(
-                  "Profile",
-                  style: TextStyle(color: Color(0xFF13497B)),
-                ),
-              ),
-              ListTile(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const feedback(),
-                    ),
-                  );
-                },
-                leading: const Icon(
-                    Icons.feedback,
-                    color: Color(0xFF13497B)),
-                title: const Text(
-                  "Feedback",
-                  style: TextStyle(color: Color(0xFF13497B)),
-                ),
-              ),
-              const ListTile(
-                leading: Icon(
-                    Icons.share,
-                    color: Color(0xFF13497B)),
-                title: Text(
-                  "Share",
-                  style: TextStyle(color: Color(0xFF13497B)),
-                ),
-              ),
-              const ListTile(
-                leading: Icon(
-                    Icons.star,
-                    color: Color(0xFF13497B)),
-                title: Text(
-                  "Rate us",
-                  style: TextStyle(color: Color(0xFF13497B)),
-                ),
-              ),
-              ListTile(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => MyApp(),
-                    ),
-                  );
-                },
-                leading: const Icon(
-                    Icons.logout,
-                    color: Color(0xFF13497B)),
-                title: const Text(
-                  "Logout",
-                  style: TextStyle(color: Color(0xFF13497B)),
-                ),
-              ),
-            ],
-          ),
-        ),
         bottomNavigationBar: CurvedNavigationBar(
           backgroundColor: Colors.white,
           buttonBackgroundColor: Colors.lightGreen,
@@ -252,7 +164,7 @@ Future<Map<String, dynamic>?> fetchBet() async {
       Map<String, dynamic> responseBody = jsonDecode(response.body);
       print("zzzzzzz" + responseBody.toString());
       List<dynamic>? detailsList =
-      responseBody['betStudentInformationList'] as List?;
+          responseBody['betStudentInformationList'] as List?;
 
       if (detailsList != null && detailsList.isNotEmpty) {
         return responseBody; // Return the fetched data

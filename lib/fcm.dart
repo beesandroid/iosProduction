@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,13 +33,17 @@ class NotificationHandler {
 
     // Handle notification tap when the app is opened from a terminated state
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
+
       // Handle notification tap
     });
 
     // Fetch and save the token with retry mechanism
     await _fetchAndSaveTokenWithRetry();
   }
-
+  void _handleMessageTap(BuildContext context, RemoteMessage message) {
+    // Implement your navigation logic here
+    Navigator.pushNamed(context, '/dashboard');
+  }
   Future<void> _fetchAndSaveTokenWithRetry({int retries = 3}) async {
     for (int attempt = 0; attempt < retries; attempt++) {
       try {
