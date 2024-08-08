@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyAWsu3R7-44eUdEGf3xnLAr4ZOD-Jl2Vwo</string>
+	<key>GCM_SENDER_ID</key>
+	<string>120016097465</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.betplusIos</string>
+	<key>PROJECT_ID</key>
+	<string>betplus-87c82</string>
+	<key>STORAGE_BUCKET</key>
+	<string>betplus-87c82.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:120016097465:ios:5e5612bc3f6071803c8b68</string>
+</dict>
+</plist>

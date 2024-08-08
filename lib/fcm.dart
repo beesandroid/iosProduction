@@ -7,34 +7,71 @@ class NotificationHandler {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<void> init() async {
-    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-      if (message.notification != null) {
-        // Handle notification
-        print('Message title: ${message.notification!.title}');
-        print('Message body: ${message.notification!.body}');
-      }
-    });
-    FirebaseMessaging messaging = FirebaseMessaging.instance;
-    messaging.requestPermission(
+    // Request notification permissions
+    NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
       sound: true,
     );
 
+    if (settings.authorizationStatus == AuthorizationStatus.authorized) {
+      print('User granted permission');
+    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+      print('User granted provisional permission');
+    } else {
+      print('User declined or has not accepted permission');
+    }
 
+    // Listen for messages when the app is in the foreground
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      if (message.notification != null) {
+        print('Message title: ${message.notification!.title}');
+        print('Message body: ${message.notification!.body}');
+      }
+    });
+
+    // Handle notification tap when the app is opened from a terminated state
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       // Handle notification tap
     });
 
-    // Fetch and save the token
-    await _getToken();
+    // Fetch and save the token with retry mechanism
+    await _fetchAndSaveTokenWithRetry();
+  }
+
+  Future<void> _fetchAndSaveTokenWithRetry({int retries = 3}) async {
+    for (int attempt = 0; attempt < retries; attempt++) {
+      try {
+        await _getToken();
+        return;
+      } catch (e) {
+        print('Attempt ${attempt + 1} failed: $e');
+        if (attempt < retries - 1) {
+          await Future.delayed(Duration(seconds: 2));
+        } else {
+          print('Failed to get token after $retries attempts');
+        }
+      }
+    }
   }
 
   Future<void> _getToken() async {
-    String? token = await _firebaseMessaging.getToken();
-    print('FCM Token: $token'); // Print the token for debugging
-    if (token != null) {
-      await saveTokenToServer(token); // Save the token
+    // Retrieve the APNS token for iOS devices
+    String? apnsToken = await _firebaseMessaging.getAPNSToken();
+    print('APNS Token: $apnsToken'); // Print the APNS token for debugging
+
+    if (apnsToken == null) {
+      throw Exception('APNS token is not set');
+    }
+
+    // Retrieve the FCM token
+    String? fcmToken = await _firebaseMessaging.getToken();
+    print('FCM Token: $fcmToken'); // Print the FCM token for debugging
+
+    if (fcmToken != null) {
+      await saveTokenToServer(fcmToken); // Save the token
+    } else {
+      throw Exception('FCM token is not set');
     }
   }
 

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "120016097465",
+    "project_id": "betplus-87c82",
+    "storage_bucket": "betplus-87c82.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120016097465:android:506b7bb15f02a0623c8b68",
+        "android_client_info": {
+          "package_name": "com.beesbetplusapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0lPtgZwLgLuAjVZcx-nCTWmDUoZPHiug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:120016097465:android:bb706b9edcf0c69a3c8b68",
+        "android_client_info": {
+          "package_name": "com.example.betplus_ios"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0lPtgZwLgLuAjVZcx-nCTWmDUoZPHiug"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

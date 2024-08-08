@@ -155,7 +155,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       );
 
       final responseBody =
-          jsonDecode(response.body); // Parse response body here
+      jsonDecode(response.body); // Parse response body here
 
       if (response.statusCode == 200) {
         // Check if response contains specific error message
@@ -240,7 +240,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         Map<String, dynamic> responseBody = jsonDecode(response.body);
         print("zzzzzzz" + responseBody.toString());
         List<dynamic>? detailsList =
-            responseBody['betStudentInformationList'] as List?;
+        responseBody['betStudentInformationList'] as List?;
 
         if (detailsList != null && detailsList.isNotEmpty) {
           return responseBody; // Return the fetched data
@@ -393,7 +393,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                         ),
                                         labelText: "Group Code",
                                         labelStyle:
-                                            TextStyle(color: Colors.grey),
+                                        TextStyle(color: Colors.grey),
                                         enabledBorder: InputBorder.none,
                                         focusedBorder: InputBorder.none,
                                       ),
@@ -424,7 +424,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                         ),
                                         labelText: "User Id",
                                         labelStyle:
-                                            TextStyle(color: Colors.grey),
+                                        TextStyle(color: Colors.grey),
                                         enabledBorder: InputBorder.none,
                                         focusedBorder: InputBorder.none,
                                       ),
@@ -453,7 +453,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                         ),
                                         labelText: "Password",
                                         labelStyle:
-                                            TextStyle(color: Colors.grey),
+                                        TextStyle(color: Colors.grey),
                                         enabledBorder: InputBorder.none,
                                         focusedBorder: InputBorder.none,
                                         suffixIcon: IconButton(
@@ -488,7 +488,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                         backgroundColor: Colors.lightGreen,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
-                                              BorderRadius.circular(10),
+                                          BorderRadius.circular(10),
                                         ),
                                       ),
                                       child: const Text(
