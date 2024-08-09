@@ -50,12 +50,14 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
-  bool isChecked = false;
+
   TextEditingController password = TextEditingController();
   TextEditingController userName = TextEditingController();
   TextEditingController grpCode = TextEditingController();
   String? groupPhotoUrl;
-  bool _obscureText = false;
+   bool isChecked=false;
+
+  bool _obscureText = true;
   bool _isFirstTime = true; // Define _obscureText variable in your widget state
 
   Future<void> checkFirstTime() async {
@@ -127,10 +129,16 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   Future<void> loadSavedCredentials() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      grpCode.text = prefs.getString('grpCode') ?? '';
-      userName.text = prefs.getString('userName') ?? '';
-      password.text = prefs.getString('password') ?? '';
       isChecked = prefs.getBool('isChecked') ?? false;
+      if (isChecked) {
+        grpCode.text = prefs.getString('grpCode') ?? '';
+        userName.text = prefs.getString('userName') ?? '';
+        password.text = prefs.getString('password') ?? '';
+      } else {
+        grpCode.clear();
+        userName.clear();
+        password.clear();
+      }
     });
   }
 
@@ -170,8 +178,19 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           showToast(responseBody['message'], context: context);
           return;
         }
+        _checkLoginStatus();
 
         final prefs = await SharedPreferences.getInstance();
+
+        if (isChecked) {
+          prefs.setString('grpCode', grpCode);
+          prefs.setString('userName', userName);
+          prefs.setString('password', password);
+        } else {
+          prefs.remove('grpCode');
+          prefs.remove('userName');
+          prefs.remove('password');
+        }
 
         responseBody.forEach((key, value) {
           if (value is String) {
@@ -197,8 +216,6 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         } else {
           print('Failed to get FCM token');
         }
-
-        // Navigate to the next screen if login is successful
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Profile()),
@@ -274,6 +291,9 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     _animationController.dispose();
     super.dispose();
   }
+
+
+
 
   @override
   Widget build(BuildContext context) {
@@ -522,13 +542,18 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                               padding: const EdgeInsets.only(left: 12),
                               child: Checkbox(
                                 value: isChecked,
-                                onChanged: (bool? value) {
+                                onChanged: (bool? value) async {
                                   setState(() {
                                     isChecked = value ?? false;
                                   });
+
+                                  // Store the checkbox state in SharedPreferences
+                                  final prefs = await SharedPreferences.getInstance();
+                                  prefs.setBool('isChecked', isChecked);
                                 },
                               ),
                             ),
+
                             Text(
                               "Remember credentials",
                               style: TextStyle(color: Colors.lightGreen),
@@ -592,5 +617,20 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         ),
       ),
     );
+
+  }
+
+  Future<bool> _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    bool rememberCredentials = prefs.getBool('isChecked') ?? false;
+
+    if (isLoggedIn && rememberCredentials) {
+      // If both are true, directly navigate to Profile
+      return true;
+    } else {
+      // Otherwise, show SplashScreen
+      return false;
+    }
   }
 }

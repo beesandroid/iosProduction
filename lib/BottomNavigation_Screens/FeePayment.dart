@@ -21,11 +21,67 @@ class FeePayments extends StatefulWidget {
 
 class _FeePaymentsState extends State<FeePayments> {
   late Future<List<MenuDetailsList>> _menuDetailsListFuture;
+  int _unreadNotificationsCount = 0;
 
   @override
   void initState() {
     super.initState();
     _menuDetailsListFuture = fetchMenuDetailsList();
+    fetchUnreadNotificationsCount();
+
+  }
+  Future<void> fetchUnreadNotificationsCount() async {
+    try {
+      final List<NotificationModel> notifications = await fetchNotifications();
+      setState(() {
+        _unreadNotificationsCount = notifications.where((n) => n.readStatus == 0).length;
+      });
+    } catch (e) {
+      setState(() {
+        _unreadNotificationsCount = 0;
+      });
+      // Handle error if necessary
+    }
+  }
+
+  Future<List<NotificationModel>> fetchNotifications({bool markAsRead = false}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String grpCodeValue = prefs.getString('grpCode') ?? '';
+    int schoolid = prefs.getInt('schoolId') ?? 0;
+    int studId = prefs.getInt('studId') ?? 0;
+
+    final apiUrl = 'https://beessoftware.cloud/CoreAPI/Android/GetNotificationDetails';
+    final requestBody = {
+      "GrpCode": grpCodeValue,
+      "ColCode": "pss",
+      "CollegeId": "0001",
+      "SchoolId": 0,
+      "StudId": 331,
+      "Flag": markAsRead ? "1" : "0",
+      "readStatus": markAsRead ? 1 : 0,
+    };
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonResponse = json.decode(response.body)['getNotificationsList'];
+      return jsonResponse.map((json) {
+        return NotificationModel(
+          notId: json['notId'],
+          notificationMessage: json['notificationMessage'],
+          notifiedDt: json['notifiedDt'],
+          readStatus: json['readStatus'], // Add readStatus here
+        );
+      }).toList();
+    } else {
+      throw Exception('Failed to fetch notifications');
+    }
   }
 
   Future<List<MenuDetailsList>> fetchMenuDetailsList() async {
@@ -75,16 +131,45 @@ class _FeePaymentsState extends State<FeePayments> {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const notification_screen(),
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => notification_screen(),
+                    ),
+                  ).then((_) {
+                    fetchUnreadNotificationsCount();
+                  });
+                },
+                icon: const Icon(Icons.notifications_active),
+              ),
+              Positioned(
+                right: 6,
+                top: 3,
+                child: Container(
+                  padding: EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: _unreadNotificationsCount > 0 ? Colors.red : Colors.grey,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  constraints: BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  child: Text(
+                    '$_unreadNotificationsCount',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              );
-            },
-            icon: const Icon(Icons.notifications_active),
+              ),
+            ],
           ),
         ],
       ),

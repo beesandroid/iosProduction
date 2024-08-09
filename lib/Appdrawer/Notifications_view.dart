@@ -1,21 +1,20 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
+import 'package:http/http.dart'as http;
+import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../views/PROVIDER.dart';
 
 class NotificationModel {
   final int notId;
   final String notificationMessage;
   final String notifiedDt;
+  final int readStatus; // Add readStatus here
 
   NotificationModel({
     required this.notId,
     required this.notificationMessage,
     required this.notifiedDt,
+    required this.readStatus, // Add readStatus to the constructor
   });
 }
 
@@ -28,13 +27,13 @@ class notification_screen extends StatefulWidget {
 
 class _notification_screenState extends State<notification_screen> {
   late Future<List<NotificationModel>> _notificationListFuture;
-
-  bool _isLoading = true; // Flag to track loading state
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _notificationListFuture = fetchNotifications();
+    _notificationListFuture = fetchNotifications(markAsRead: true);
+
     _notificationListFuture.then((_) {
       setState(() {
         _isLoading = false;
@@ -42,24 +41,21 @@ class _notification_screenState extends State<notification_screen> {
     });
   }
 
-  Future<List<NotificationModel>> fetchNotifications() async {
-
-
-
+  Future<List<NotificationModel>> fetchNotifications({bool markAsRead = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String grpCodeValue = prefs.getString('grpCode') ?? '';
-    int schoolid = prefs.getInt('schoolId') ?? 00;
-    int studId = prefs.getInt('studId') ?? 00;
+    int schoolid = prefs.getInt('schoolId') ?? 0;
+    int studId = prefs.getInt('studId') ?? 0;
 
-    final apiUrl =
-        'https://beessoftware.cloud/CoreAPI/Android/GetNotificationDetails';
+    final apiUrl = 'https://beessoftware.cloud/CoreAPI/Android/GetNotificationDetails';
     final requestBody = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",
       "CollegeId": "0001",
       "SchoolId": schoolid,
       "StudId": studId,
-      "Flag": "0"
+
+      "readStatus": markAsRead ? 1 : 0,
     };
 
     final response = await http.post(
@@ -71,14 +67,13 @@ class _notification_screenState extends State<notification_screen> {
     );
 
     if (response.statusCode == 200) {
-      print(response);
-      final List<dynamic> jsonResponse =
-          json.decode(response.body)['getNotificationsList'];
+      final List<dynamic> jsonResponse = json.decode(response.body)['getNotificationsList'];
       return jsonResponse.map((json) {
         return NotificationModel(
           notId: json['notId'],
           notificationMessage: json['notificationMessage'],
           notifiedDt: json['notifiedDt'],
+          readStatus: json['readStatus'], // Add readStatus here
         );
       }).toList();
     } else {
@@ -88,74 +83,75 @@ class _notification_screenState extends State<notification_screen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.lightGreen,
-        leading: IconButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: const Icon(
-            Icons.arrow_back,
-            color: Colors.white,
+    return
+      Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.lightGreen,
+          leading: IconButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            icon: const Icon(
+              Icons.arrow_back,
+              color: Colors.white,
+            ),
+          ),
+          title: const Text(
+            'Notifications',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 29,
+              color: Colors.white,
+            ),
           ),
         ),
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 29,
-            color: Colors.white,
-          ),
-        ),
-      ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator())
-          : FutureBuilder<List<NotificationModel>>(
-              future: _notificationListFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else {
-                  final List<NotificationModel> notifications =
-                      snapshot.data ?? [];
-                  if (notifications.isEmpty) {
-                    return Center(child: Text('No notifications available'));
-                  }
-                  return ListView.builder(
-                    itemCount: notifications.length,
-                    itemBuilder: (context, index) {
-                      final NotificationModel notification =
-                          notifications[index];
-                      return Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.black),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: ListTile(
-                            title: Text(
-                              notification.notifiedDt,
-                              style: TextStyle(
-                                color: Color(0xFFFF9800),
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                            subtitle: Text(
-                              notification.notificationMessage,
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
+        body: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : FutureBuilder<List<NotificationModel>>(
+          future: _notificationListFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else {
+              final List<NotificationModel> notifications =
+                  snapshot.data ?? [];
+              if (notifications.isEmpty) {
+                return Center(child: Text('No notifications available'));
+              }
+              return ListView.builder(
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  final NotificationModel notification =
+                  notifications[index];
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: ListTile(
+                        title: Text(
+                          notification.notifiedDt,
+                          style: TextStyle(
+                            color: Color(0xFFFF9800),
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      );
-                    },
+                        subtitle: Text(
+                          notification.notificationMessage,
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
                   );
-                }
-              },
-            ),
-    );
+                },
+              );
+            }
+          },
+        ),
+      );
   }
 }

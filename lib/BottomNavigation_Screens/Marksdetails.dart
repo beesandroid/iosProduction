@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -20,17 +19,40 @@ class Marksdetails extends StatefulWidget {
 
 class _MarksdetailsState extends State<Marksdetails> {
   late Future<List<MarksDetailsList>> _marksDetailsListFuture;
+  int _unreadNotificationsCount = 0;
 
   @override
   void initState() {
     super.initState();
     _marksDetailsListFuture = fetchMarksDetailsList();
+    fetchUnreadNotificationsCount();
+  }
+
+  Future<void> fetchUnreadNotificationsCount() async {
+    try {
+      final List<NotificationModel> notifications = await fetchNotifications();
+      setState(() {
+        _unreadNotificationsCount = notifications.where((n) => n.readStatus == 0).length;
+      });
+    } catch (e) {
+      setState(() {
+        _unreadNotificationsCount = 0;
+      });
+      // Handle error if necessary
+    }
   }
 
   Future<List<MarksDetailsList>> fetchMarksDetailsList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String grpCodeValue = prefs.getString('grpCode') ?? '';
-    String userNameValue = prefs.getString('userName') ?? '';
+    String? grpCodeValue = prefs.getString('grpCode');
+
+    if (grpCodeValue == null) {
+      // Handle the null value here, maybe assign a default or show an error
+      print('Group Code is null');
+    } else {
+      // Use grpCodeValue safely here
+      print('Group Code is: $grpCodeValue');
+    }
 
     String apiUrl = 'https://beessoftware.cloud/CoreAPI/Flutter/MenuDetails';
     Map<String, dynamic> requestBody = {
@@ -63,6 +85,46 @@ class _MarksdetailsState extends State<Marksdetails> {
     }
   }
 
+  Future<List<NotificationModel>> fetchNotifications({bool markAsRead = false}) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String grpCodeValue = prefs.getString('grpCode') ?? '';
+    int schoolid = prefs.getInt('schoolId') ?? 0;
+    int studId = prefs.getInt('studId') ?? 0;
+
+    final apiUrl = 'https://beessoftware.cloud/CoreAPI/Android/GetNotificationDetails';
+    final requestBody = {
+      "GrpCode": grpCodeValue,
+      "ColCode": "pss",
+      "CollegeId": "0001",
+      "SchoolId": 0,
+      "StudId": 331,
+      "Flag": markAsRead ? "1" : "0",
+      "readStatus": markAsRead ? 1 : 0,
+    };
+
+    final response = await http.post(
+      Uri.parse(apiUrl),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonResponse = json.decode(response.body)['getNotificationsList'];
+      return jsonResponse.map((json) {
+        return NotificationModel(
+          notId: json['notId'],
+          notificationMessage: json['notificationMessage'],
+          notifiedDt: json['notifiedDt'],
+          readStatus: json['readStatus'], // Add readStatus here
+        );
+      }).toList();
+    } else {
+      throw Exception('Failed to fetch notifications');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,19 +138,47 @@ class _MarksdetailsState extends State<Marksdetails> {
           ),
         ),
         actions: [
-          IconButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => notification_screen(),
+          Stack(
+            children: [
+              IconButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => notification_screen(),
+                    ),
+                  ).then((_) {
+                    fetchUnreadNotificationsCount();
+                  });
+                },
+                icon: const Icon(Icons.notifications_active),
+              ),
+              Positioned(
+                right: 6,
+                top: 3,
+                child: Container(
+                  padding: EdgeInsets.all(2),
+                  decoration: BoxDecoration(
+                    color: _unreadNotificationsCount > 0 ? Colors.red : Colors.grey,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  constraints: BoxConstraints(
+                    minWidth: 16,
+                    minHeight: 16,
+                  ),
+                  child: Text(
+                    '$_unreadNotificationsCount',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 12,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-              );
-            },
-            icon: const Icon(Icons.notifications_active),
+              ),
+            ],
           ),
         ],
-
       ),
       drawer: CustomDrawer(),
       body: FutureBuilder<List<MarksDetailsList>>(
@@ -120,9 +210,8 @@ class _MarksdetailsState extends State<Marksdetails> {
                       child: ListTile(
                         leading: Image.network(
                           menu.imagePath ?? '',
-                          // Use the imagePath from your data
-                          width: 50, // Set width as needed
-                          height: 50, // Set height as needed
+                          width: 50,
+                          height: 50,
                         ),
                         title: Text(
                           menu.subCategory ?? '',
@@ -134,20 +223,17 @@ class _MarksdetailsState extends State<Marksdetails> {
                         ),
                         onTap: () {
                           if (index == 0) {
-                            // Navigate to Marks Entry screen
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => midMarks()));
                           } else if (index == 1) {
-                            // Navigate to Marks Report screen
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => FinalInternalMarks()),
                             );
                           } else if (index == 2) {
-                            // Navigate to Other Marks Details screen
                             Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -171,3 +257,4 @@ class _MarksdetailsState extends State<Marksdetails> {
     );
   }
 }
+

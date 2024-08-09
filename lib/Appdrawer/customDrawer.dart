@@ -82,7 +82,9 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ),
             TextButton(
               onPressed: () {
-                logout(); // Navigate to the desired screen
+                // Assuming isChecked is defined in this screen
+                logout(context);
+// Navigate to the desired screen
               },
               child: Text("Yes"),
             ),
@@ -188,13 +190,26 @@ class _CustomDrawerState extends State<CustomDrawer> {
       ),
     );
   }
-  Future<void> logout() async {
+  Future<void> logout(BuildContext context) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.remove('isLoggedIn');
+    bool isChecked = prefs.getBool('isChecked') ?? false;
+
+    if (!isChecked) {
+      await prefs.remove('grpCode');
+      await prefs.remove('userName');
+      await prefs.remove('password');
+    }
+
+    await prefs.setBool('isLoggedIn', false);
+
+    // Navigate back to the login screen or splash screen
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => SplashScreen()), // Redirect to splash screen or login screen
+      MaterialPageRoute(builder: (context) => SplashScreen()),
     );
   }
+
+
+
 
 }
