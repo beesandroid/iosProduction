@@ -54,7 +54,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
       "ColCode": "pss",
       "CollegeId": "0001",
       "SchoolId": 0,
-      "StudId": 331,
+      "StudId": studId,
       "Flag": markAsRead ? "1" : "0",
       "readStatus": markAsRead ? 1 : 0,
     };
@@ -65,10 +65,12 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(requestBody),
+
     );
 
     if (response.statusCode == 200) {
       final List<dynamic> jsonResponse = json.decode(response.body)['getNotificationsList'];
+      print(jsonResponse);
       return jsonResponse.map((json) {
         return NotificationModel(
           notId: json['notId'],

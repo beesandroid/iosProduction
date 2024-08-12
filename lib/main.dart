@@ -24,8 +24,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-  final notificationHandler = NotificationHandler();
-  notificationHandler.init();
+
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
@@ -35,12 +34,13 @@ void main() async {
       create: (_) => UserProvider(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: isLoggedIn ? Profile() : SplashScreen(), // Navigate based on login state
+        home: isLoggedIn
+            ? Profile()
+            : SplashScreen(), // Navigate based on login state
       ),
     ),
   );
 }
-
 
 class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
@@ -50,12 +50,11 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
-
   TextEditingController password = TextEditingController();
   TextEditingController userName = TextEditingController();
   TextEditingController grpCode = TextEditingController();
   String? groupPhotoUrl;
-   bool isChecked=false;
+  bool isChecked = false;
 
   bool _obscureText = true;
   bool _isFirstTime = true; // Define _obscureText variable in your widget state
@@ -76,6 +75,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
     checkFirstTime();
+    final notificationHandler = NotificationHandler();
+    notificationHandler.init(context);
 
     loadSavedCredentials();
     _animationController = AnimationController(
@@ -142,7 +143,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     });
   }
 
-  Future<void> login(BuildContext context, String grpCode, String userName, String password) async {
+  Future<void> login(BuildContext context, String grpCode, String userName,
+      String password) async {
     if (grpCode.isEmpty || userName.isEmpty || password.isEmpty) {
       showToast('Please enter all fields', context: context);
       return;
@@ -168,7 +170,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       );
 
       final responseBody =
-      jsonDecode(response.body); // Parse response body here
+          jsonDecode(response.body); // Parse response body here
 
       if (response.statusCode == 200) {
         // Check if response contains specific error message
@@ -209,7 +211,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         });
         prefs.setBool('isLoggedIn', true);
         final notificationHandler = NotificationHandler();
-        await notificationHandler.init(); // Ensure token is fetched
+        await notificationHandler.init(context); // Ensure token is fetched
         String? token = await FirebaseMessaging.instance.getToken();
         if (token != null) {
           await notificationHandler.saveTokenToServer(token);
@@ -263,7 +265,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         Map<String, dynamic> responseBody = jsonDecode(response.body);
         print("zzzzzzz" + responseBody.toString());
         List<dynamic>? detailsList =
-        responseBody['betStudentInformationList'] as List?;
+            responseBody['betStudentInformationList'] as List?;
 
         if (detailsList != null && detailsList.isNotEmpty) {
           return responseBody; // Return the fetched data
@@ -291,9 +293,6 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     _animationController.dispose();
     super.dispose();
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -419,7 +418,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                         ),
                                         labelText: "Group Code",
                                         labelStyle:
-                                        TextStyle(color: Colors.grey),
+                                            TextStyle(color: Colors.grey),
                                         enabledBorder: InputBorder.none,
                                         focusedBorder: InputBorder.none,
                                       ),
@@ -450,7 +449,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                         ),
                                         labelText: "User Id",
                                         labelStyle:
-                                        TextStyle(color: Colors.grey),
+                                            TextStyle(color: Colors.grey),
                                         enabledBorder: InputBorder.none,
                                         focusedBorder: InputBorder.none,
                                       ),
@@ -479,7 +478,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                         ),
                                         labelText: "Password",
                                         labelStyle:
-                                        TextStyle(color: Colors.grey),
+                                            TextStyle(color: Colors.grey),
                                         enabledBorder: InputBorder.none,
                                         focusedBorder: InputBorder.none,
                                         suffixIcon: IconButton(
@@ -514,7 +513,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                         backgroundColor: Colors.lightGreen,
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
-                                          BorderRadius.circular(10),
+                                              BorderRadius.circular(10),
                                         ),
                                       ),
                                       child: const Text(
@@ -548,12 +547,12 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                                   });
 
                                   // Store the checkbox state in SharedPreferences
-                                  final prefs = await SharedPreferences.getInstance();
+                                  final prefs =
+                                      await SharedPreferences.getInstance();
                                   prefs.setBool('isChecked', isChecked);
                                 },
                               ),
                             ),
-
                             Text(
                               "Remember credentials",
                               style: TextStyle(color: Colors.lightGreen),
@@ -617,7 +616,6 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         ),
       ),
     );
-
   }
 
   Future<bool> _checkLoginStatus() async {

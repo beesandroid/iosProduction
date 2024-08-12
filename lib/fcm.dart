@@ -1,5 +1,6 @@
+import 'package:betplus_ios/Appdrawer/Notifications_view.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -7,7 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 class NotificationHandler {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
-  Future<void> init() async {
+  Future<void> init(BuildContext context) async {
     // Request notification permissions
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
@@ -33,17 +34,23 @@ class NotificationHandler {
 
     // Handle notification tap when the app is opened from a terminated state
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-
-      // Handle notification tap
+      _handleMessageTap(context, message);
     });
 
     // Fetch and save the token with retry mechanism
     await _fetchAndSaveTokenWithRetry();
   }
+
   void _handleMessageTap(BuildContext context, RemoteMessage message) {
-    // Implement your navigation logic here
-    Navigator.pushNamed(context, '/dashboard');
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => notification_screen(), // Replace with your actual screen widget
+      ),
+    );
   }
+
+
   Future<void> _fetchAndSaveTokenWithRetry({int retries = 3}) async {
     for (int attempt = 0; attempt < retries; attempt++) {
       try {

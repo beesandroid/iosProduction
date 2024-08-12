@@ -119,7 +119,7 @@ class _ExamTimeTableState extends State<ExamTimeTable> {
       "ColCode": "pss",
       "CollegeId": "0001",
       "SchoolId": 0,
-      "StudId": 331,
+      "StudId": studId,
       "Flag": markAsRead ? "1" : "0",
       "readStatus": markAsRead ? 1 : 0,
     };
