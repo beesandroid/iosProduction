@@ -829,6 +829,7 @@ class _ReevaluationState extends State<Reevaluation> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      print(data);
       setState(() {
         _feeDetails = data['revalFeeDetailsList'][0];
         _isLoading = false;
@@ -870,6 +871,7 @@ class _ReevaluationState extends State<Reevaluation> {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      print(data);
       setState(() {
         _semesters = List<String>.from(
             data['showAllStudSemsList'].map((item) => item['sem']));

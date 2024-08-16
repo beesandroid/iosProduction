@@ -94,6 +94,7 @@ class _FeePaymentsState extends State<FeePayments> {
       "CollegeId": "0001",
       "Category": "Fee Payments"
     };
+    print(requestBody);
 
     final response = await http.post(
       Uri.parse(apiUrl),
@@ -105,6 +106,7 @@ class _FeePaymentsState extends State<FeePayments> {
 
     if (response.statusCode == 200) {
       final dynamic data = jsonDecode(response.body);
+      print(data);
       if (data is List) {
         return data.map((e) => MenuDetailsList.fromJson(e)).toList();
       } else if (data is Map<String, dynamic>) {
@@ -214,33 +216,52 @@ class _FeePaymentsState extends State<FeePayments> {
                               fontSize: 20),
                         ),
                         onTap: () {
-                          if (index == 0) {
-                            Navigator.push(
+                          switch (menu.subCategory) {
+                            case "Regular":
+                              Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => RegularFeePayment()));
-                          } else if (index == 3) {
-                            Navigator.push(
+                                MaterialPageRoute(builder: (context) => RegularFeePayment()),
+                              );
+                              break;
+                            case "Supplementary":
+                              Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => FeeInformation()));
-                          }else if (index == 1) {
-                            Navigator.push(
+                                MaterialPageRoute(builder: (context) => SupplyFeePayment()),
+                              );
+                              break;
+                            case "Re-Evaluation":
+                              Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => SupplyFeePayment()));
-                          }else if (index == 2) {
-                            Navigator.push(
+                                MaterialPageRoute(builder: (context) => Reevaluation()),
+                              );
+                              break;
+                            case "Fee Information":
+                              Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => Reevaluation()));
-                          }else if (index == 7) {
-                            Navigator.push(
+                                MaterialPageRoute(builder: (context) => FeeInformation()),
+                              );
+                              break;
+                            case "Script View Fee Payment":
+                            // Add the appropriate navigation logic here
+                              break;
+                            case "Betterment Fee Payment":
+                            // Add the appropriate navigation logic here
+                              break;
+                            case "Condonation Fee Payment":
+                            // Add the appropriate navigation logic here
+                              break;
+                            case "Certificates Fee Payment":
+                              Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => CertificateFeePayments()));
+                                MaterialPageRoute(builder: (context) => CertificateFeePayments()),
+                              );
+                              break;
+                            default:
+                            // Handle unknown subCategory or show a default screen
+                              break;
                           }
                         },
+
                       ),
                     ),
                   ),

@@ -93,7 +93,7 @@ class NotificationHandler {
     await _fetchAndSaveTokenWithRetry();
   }
 
-  Future<void> _fetchAndSaveTokenWithRetry({int retries = 3}) async {
+  Future<void> _fetchAndSaveTokenWithRetry({int retries = 1}) async {
     for (int attempt = 0; attempt < retries; attempt++) {
       try {
         await _getToken();
@@ -101,7 +101,7 @@ class NotificationHandler {
       } catch (e) {
         print('Attempt ${attempt + 1} failed: $e');
         if (attempt < retries - 1) {
-          await Future.delayed(Duration(seconds: 2));
+          await Future.delayed(Duration(seconds: 1));
         } else {
           print('Failed to get token after $retries attempts');
         }
