@@ -1,10 +1,9 @@
 import 'dart:convert';
-
+import 'package:betplus_ios/Appdrawer/Notifications_view.dart';
 import 'package:betplus_ios/views/ForgotPasswordScreen.dart';
 import 'package:betplus_ios/views/MainPage.dart';
 import 'package:betplus_ios/views/NewLogin.dart';
 import 'package:betplus_ios/views/PROVIDER.dart';
-
 import 'package:betplus_ios/views/splashscreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -13,7 +12,6 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'fcm.dart';
 import 'firebase_options.dart';
 import 'onBoarding_screens/onboardingscreen.dart';
@@ -26,6 +24,7 @@ void main() async {
 
 
 
+
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
@@ -34,10 +33,17 @@ void main() async {
       create: (_) => UserProvider(),
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: isLoggedIn
-            ? Profile()
-            : SplashScreen(), // Navigate based on login state
-      ),
+        initialRoute: isLoggedIn ? '/profile' : '/splash',
+        routes: {
+          '/splash': (context) => SplashScreen(),
+          '/profile': (context) => Profile(),
+          '/forgot-password': (context) => ForgotPasswordScreen(),
+          '/new-login': (context) => NewLogin(),
+          '/onboarding': (context) => OnboardingScreen(),
+          '/notification': (context) => notification_screen(),
+          // Add other routes here
+        },
+      )
     ),
   );
 }
@@ -156,6 +162,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       "UserName": userName,
       "Password": password,
     });
+    print(payload);
 
     final apiUrl =
         'https://beessoftware.cloud/CoreAPI/Flutter/GetUserDetails'; // Consider making this a constant
@@ -173,6 +180,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           jsonDecode(response.body); // Parse response body here
 
       if (response.statusCode == 200) {
+        print(response.body);
         // Check if response contains specific error message
         if (responseBody['message'] != null &&
             responseBody['message'] ==

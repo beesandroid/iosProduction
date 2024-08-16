@@ -10,7 +10,6 @@ import '../Receipts/Halltickets.dart';
 import '../Receipts/receipts.dart';
 import '../response/downloadListResponse.dart';
 
-
 class DownloadsScreen extends StatefulWidget {
   const DownloadsScreen({Key? key}) : super(key: key);
 
@@ -28,11 +27,13 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     _downloadListFuture = fetchDownloadList();
     fetchUnreadNotificationsCount();
   }
+
   Future<void> fetchUnreadNotificationsCount() async {
     try {
       final List<NotificationModel> notifications = await fetchNotifications();
       setState(() {
-        _unreadNotificationsCount = notifications.where((n) => n.readStatus == 0).length;
+        _unreadNotificationsCount =
+            notifications.where((n) => n.readStatus == 0).length;
       });
     } catch (e) {
       setState(() {
@@ -42,13 +43,15 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     }
   }
 
-  Future<List<NotificationModel>> fetchNotifications({bool markAsRead = false}) async {
+  Future<List<NotificationModel>> fetchNotifications(
+      {bool markAsRead = false}) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String grpCodeValue = prefs.getString('grpCode') ?? '';
     int schoolid = prefs.getInt('schoolId') ?? 0;
     int studId = prefs.getInt('studId') ?? 0;
 
-    final apiUrl = 'https://beessoftware.cloud/CoreAPI/Android/GetNotificationDetails';
+    final apiUrl =
+        'https://beessoftware.cloud/CoreAPI/Android/GetNotificationDetails';
     final requestBody = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",
@@ -65,11 +68,11 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode(requestBody),
-
     );
 
     if (response.statusCode == 200) {
-      final List<dynamic> jsonResponse = json.decode(response.body)['getNotificationsList'];
+      final List<dynamic> jsonResponse =
+          json.decode(response.body)['getNotificationsList'];
       print(jsonResponse);
       return jsonResponse.map((json) {
         return NotificationModel(
@@ -85,13 +88,10 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
   }
 
   Future<List<downloadlistdetails>> fetchDownloadList() async {
-
-
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? grpCode = prefs.getString('grpCode');
     String? colCode = prefs.getString('colCode');
     String? collegeId = prefs.getString('collegeId');
-
 
     String apiUrl = 'https://beessoftware.cloud/CoreAPI/Flutter/MenuDetails';
     Map<String, dynamic> requestBody = {
@@ -108,7 +108,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
       },
       body: jsonEncode(requestBody),
     );
-print(requestBody);
+    print(requestBody);
     if (response.statusCode == 200) {
       final dynamic data = jsonDecode(response.body);
 
@@ -160,7 +160,9 @@ print(requestBody);
                 child: Container(
                   padding: EdgeInsets.all(2),
                   decoration: BoxDecoration(
-                    color: _unreadNotificationsCount > 0 ? Colors.red : Colors.grey,
+                    color: _unreadNotificationsCount > 0
+                        ? Colors.red
+                        : Colors.grey,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   constraints: BoxConstraints(

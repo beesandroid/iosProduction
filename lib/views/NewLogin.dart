@@ -103,15 +103,7 @@ class _NewLoginState extends State<NewLogin> {
               value.containsKey('status')) {
             if (value['statusCode'] == '200' && value['status'] == true) {
               final otp = value['otp'].toString();
-              Fluttertoast.showToast(
-                msg: "OTP Sent Successfully! OTP: $otp",
-                toastLength: Toast.LENGTH_LONG,
-                gravity: ToastGravity.BOTTOM,
-                timeInSecForIosWeb: 1,
-                backgroundColor: Colors.white,
-                textColor: Colors.black,
-                fontSize: 16.0,
-              );
+
 
               // Navigate to OTP validation screen
               Navigator.push(

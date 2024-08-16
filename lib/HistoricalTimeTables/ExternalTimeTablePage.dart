@@ -6,11 +6,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class ExternalTimeTablePage extends StatefulWidget {
   const ExternalTimeTablePage({Key? key}) : super(key: key);
-
   @override
   State<ExternalTimeTablePage> createState() => _ExternalTimeTablePageState();
 }
-
 class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
   List<String> examTypes = [];
   String? selectedExamType;
@@ -95,7 +93,6 @@ class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
         "AdmnNo": userName
       }),
     );
-
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
       setState(() {

@@ -9,7 +9,6 @@ class NotificationHandler {
   final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
 
   Future<void> init(BuildContext context) async {
-    // Request notification permissions
     NotificationSettings settings = await _firebaseMessaging.requestPermission(
       alert: true,
       badge: true,
@@ -18,7 +17,8 @@ class NotificationHandler {
 
     if (settings.authorizationStatus == AuthorizationStatus.authorized) {
       print('User granted permission');
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
       print('User granted provisional permission');
     } else {
       print('User declined or has not accepted permission');
@@ -26,30 +26,72 @@ class NotificationHandler {
 
     // Listen for messages when the app is in the foreground
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
+      print('Foreground message received');
+      print('Message data: ${message.data}');
+
       if (message.notification != null) {
-        print('Message title: ${message.notification!.title}');
-        print('Message body: ${message.notification!.body}');
+        print('Message notification title: ${message.notification!.title}');
+        print('Message notification body: ${message.notification!.body}');
+      } else {
+        print('No notification payload');
+      }
+
+      // If you need to handle specific data payload
+      if (message.data.isNotEmpty) {
+        print('Handling data payload: ${message.data}');
+        // Handle your data logic here
       }
     });
 
-    // Handle notification tap when the app is opened from a terminated state
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-      _handleMessageTap(context, message);
+      debugPrint('Message opened app: ${message.data}');
+
+      if (message.data.isNotEmpty) {
+        String screen = message.data['click_action'] ?? 'notification_screen()';
+        debugPrint('Navigating to screen: $screen');
+
+        if (screen == 'notification_screen()') {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => notification_screen()),
+          );
+        }
+        // Handle other screens if necessary
+      }
     });
+
+
+    RemoteMessage? initialMessage =
+        await FirebaseMessaging.instance.getInitialMessage();
+    if (initialMessage != null) {
+      print(
+          'App opened from terminated state via notification: ${initialMessage.notification?.title}');
+      String screenToNavigate =
+          initialMessage.data['screen'] ?? 'notification_screen';
+
+      // Ensure correct screen navigation
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) {
+            if (screenToNavigate == 'notification_screen') {
+              return notification_screen(); // Adjust this to match your actual screen
+            }
+            // Add more conditions here if navigating to other screens
+            return notification_screen(); // Fallback
+          },
+        ),
+      ).then((_) {
+        print('Navigation complete from terminated state');
+      }).catchError((e) {
+        print('Error navigating from terminated state: $e');
+      });
+    }
+
+    // Handle notification that opened the app from a terminated state
 
     // Fetch and save the token with retry mechanism
     await _fetchAndSaveTokenWithRetry();
   }
-
-  void _handleMessageTap(BuildContext context, RemoteMessage message) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => notification_screen(), // Replace with your actual screen widget
-      ),
-    );
-  }
-
 
   Future<void> _fetchAndSaveTokenWithRetry({int retries = 3}) async {
     for (int attempt = 0; attempt < retries; attempt++) {
@@ -104,7 +146,8 @@ class NotificationHandler {
       "Flag": "0"
     };
 
-    print('Request Body: ${json.encode(body)}'); // Print request body for debugging
+    print(
+        'Request Body: ${json.encode(body)}'); // Print request body for debugging
 
     const url = 'https://beessoftware.cloud/CoreAPI/Android/FMCTokenSaving';
     final Map<String, String> headers = {'Content-Type': 'application/json'};
