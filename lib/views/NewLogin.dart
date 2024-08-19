@@ -1,9 +1,7 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:http/http.dart' as http;
 
 import 'otp.dart';
@@ -48,8 +46,7 @@ class _NewLoginState extends State<NewLogin> {
 
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-        print(jsonResponse.toString());
-
+      print(jsonResponse.toString());
         // Scenario 1: "User Already registered"
         if (jsonResponse is List &&
             jsonResponse.length == 1 &&
