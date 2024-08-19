@@ -67,13 +67,13 @@ class NotificationHandler {
       print(
           'App opened from terminated state via notification: ${initialMessage.notification?.title}');
       String screenToNavigate =
-          initialMessage.data['screen'] ?? 'notification_screen';
+          initialMessage.data['screen'] ?? 'notification_screen()';
 
       // Ensure correct screen navigation
       Navigator.of(context).push(
         MaterialPageRoute(
           builder: (context) {
-            if (screenToNavigate == 'notification_screen') {
+            if (screenToNavigate == 'notification_screen()') {
               return notification_screen(); // Adjust this to match your actual screen
             }
             // Add more conditions here if navigating to other screens
