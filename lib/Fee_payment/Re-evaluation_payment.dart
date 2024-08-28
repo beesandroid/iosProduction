@@ -111,7 +111,7 @@ class _ReevaluationState extends State<Reevaluation> {
 
     // Send HTTP POST request
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/ReValuationShowFeeDetails'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/ReValuationShowFeeDetails'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -455,7 +455,7 @@ class _ReevaluationState extends State<Reevaluation> {
 
       final response = await http.post(
         Uri.parse(
-            'https://beessoftware.cloud/CoreAPI/Flutter/SaveReEvaluationFeeTempData'),
+            'https://mritsexams.com/CoreApi/Flutter/SaveReEvaluationFeeTempData'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -613,7 +613,7 @@ class _ReevaluationState extends State<Reevaluation> {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://beessoftware.cloud/CoreAPI/Android/SaveReEvaluationFeeMainData'),
+            'https://mritsexams.com/CoreApi/Android/SaveReEvaluationFeeMainData'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -728,7 +728,7 @@ class _ReevaluationState extends State<Reevaluation> {
 
       final response = await http.post(
         Uri.parse(
-            'https://beessoftware.cloud/CoreAPI/Android/FeeReceiptsReports'),
+            'https://mritsexams.com/CoreApi/Android/FeeReceiptsReports'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -820,7 +820,7 @@ class _ReevaluationState extends State<Reevaluation> {
     };
 
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/FeeDetials'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/FeeDetials'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -862,7 +862,7 @@ class _ReevaluationState extends State<Reevaluation> {
     };
 
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/ShowAllStudSems'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/ShowAllStudSems'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -907,7 +907,7 @@ class _ReevaluationState extends State<Reevaluation> {
     };
     ;
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/ShowStudExamType'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/ShowStudExamType'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -961,7 +961,7 @@ class _ReevaluationState extends State<Reevaluation> {
 
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/StudentReEvaluationSubjectDetails'),
+          'https://mritsexams.com/CoreApi/Android/StudentReEvaluationSubjectDetails'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -1013,7 +1013,7 @@ class _ReevaluationState extends State<Reevaluation> {
 
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/StudRevalTypeDropDown'),
+          'https://mritsexams.com/CoreApi/Android/StudRevalTypeDropDown'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -1464,7 +1464,7 @@ class _ReevaluationState extends State<Reevaluation> {
 
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/ValidateStudentReValuationFeeCollection'),
+          'https://mritsexams.com/CoreApi/Android/ValidateStudentReValuationFeeCollection'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -1512,7 +1512,7 @@ class _ReevaluationState extends State<Reevaluation> {
     };
 
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/ShowStudExamType'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/ShowStudExamType'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -1561,7 +1561,7 @@ class _ReevaluationState extends State<Reevaluation> {
 
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/ReValuationShowFeeDetails'),
+          'https://mritsexams.com/CoreApi/Android/ReValuationShowFeeDetails'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

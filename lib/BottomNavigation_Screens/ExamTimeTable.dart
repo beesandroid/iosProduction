@@ -49,7 +49,7 @@ class _ExamTimeTableState extends State<ExamTimeTable> {
       String betCurid = prefs.getString('betCurid') ?? '';
 
       final apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Android/StudentRecentTimeTable';
+          'https://mritsexams.com/CoreApi/Android/StudentRecentTimeTable';
       final requestBody = {
         "GrpCode": grpCodeValue,
         "ColCode": "PSS",
@@ -113,7 +113,7 @@ class _ExamTimeTableState extends State<ExamTimeTable> {
     int studId = prefs.getInt('studId') ?? 0;
 
     final apiUrl =
-        'https://beessoftware.cloud/CoreAPI/Android/GetNotificationDetails';
+        'https://mritsexams.com/CoreApi/Android/GetNotificationDetails';
     final requestBody = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",

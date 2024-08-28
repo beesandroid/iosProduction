@@ -47,7 +47,7 @@ class _SignUpState extends State<SignUp> {
   Future<void> fetchData() async {
     try {
       String apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Android/RegistrationFeeDisplay';
+          'https://mritsexams.com/CoreApi/Android/RegistrationFeeDisplay';
       Map<String, dynamic> requestBody = {
         'GrpCode': widget.grpCode,
         'CollegeId': '0001',
@@ -95,7 +95,7 @@ class _SignUpState extends State<SignUp> {
       }
 
       String apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Android/AndroidOnlineBilldeskPaymentProcess';
+          'https://mritsexams.com/CoreApi/Android/AndroidOnlineBilldeskPaymentProcess';
       Map<String, dynamic> requestBody = {
         'grpCode': widget.grpCode,
         'colCode': 'PSS',
@@ -155,7 +155,7 @@ class _SignUpState extends State<SignUp> {
       String emailValue = email.text.trim();
       String pass = password.text.trim();
       String apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Android/BilldeskPaymentLogs';
+          'https://mritsexams.com/CoreApi/Android/BilldeskPaymentLogs';
       Map<String, dynamic> requestBody = {
         'mercId': mercid,
         'orderId': bdorderid,

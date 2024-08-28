@@ -48,7 +48,7 @@ class _InternalViewState extends State<InternalView> {
 
     String betCourseId = prefs.getString('betCourseId') ?? '';
     final url =
-        'https://beessoftware.cloud/CoreAPI/Android/InternalExamDropDown';
+        'https://mritsexams.com/CoreApi/Android/InternalExamDropDown';
     final requestPayload = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",
@@ -93,7 +93,7 @@ class _InternalViewState extends State<InternalView> {
     String betCurid = prefs.getString('betCurid') ??'';
 
     String betCourseId = prefs.getString('betCourseId') ?? '';
-    final url = 'https://beessoftware.cloud/CoreAPI/Android/SemDropDown';
+    final url = 'https://mritsexams.com/CoreApi/Android/SemDropDown';
     final requestPayload = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",
@@ -139,7 +139,7 @@ class _InternalViewState extends State<InternalView> {
 
     String betCourseId = prefs.getString('betCourseId') ?? '';
     final url =
-        'https://beessoftware.cloud/CoreAPI/Android/InternalExamDivisionDropDown';
+        'https://mritsexams.com/CoreApi/Android/InternalExamDivisionDropDown';
     final requestPayload = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",
@@ -186,7 +186,7 @@ class _InternalViewState extends State<InternalView> {
 
     String betCourseId = prefs.getString('betCourseId') ?? '';
     final url =
-        'https://beessoftware.cloud/CoreAPI/Android/InternalExamMonthYearDropDown';
+        'https://mritsexams.com/CoreApi/Android/InternalExamMonthYearDropDown';
     final requestPayload = {
       "GrpCode": grpCodeValue,
       "CollegeId": "0001",
@@ -239,7 +239,7 @@ class _InternalViewState extends State<InternalView> {
         _selectedExamDivision != null &&
         _selectedMonthYear != null) {
       final url =
-          'https://beessoftware.cloud/CoreAPI/Android/HallTicketsDownloadReports';
+          'https://mritsexams.com/CoreApi/Android/HallTicketsDownloadReports';
       final requestPayload = {
         "GrpCode": grpCodeValue,
         "CollegeId": "0001",

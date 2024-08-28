@@ -28,7 +28,7 @@ class BetStudentProvider extends ChangeNotifier {
       String userNameValue = prefs.getString('userName') ?? '';
 
       String apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Flutter/BETStudentInformation';
+          'https://mritsexams.com/CoreApi/Flutter/BETStudentInformation';
       Map<String, String> requestBody = {
         'grpCode': grpCodeValue,
         'userName': userNameValue,

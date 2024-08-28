@@ -37,7 +37,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
     int fYearId = prefs.getInt('fYearId') ?? 00;
     int acYearId = prefs.getInt('acYearId') ?? 00;
     String collegeId = prefs.getString('collegeId') ??'';
-    final apiUrl = 'https://beessoftware.cloud/CoreApi/Android/GetClgLogo';
+    final apiUrl = 'https://mritsexams.com/CoreApi/Android/GetClgLogo';
 
     final Map<String, String> requestBody = {
       "GrpCode": grpCodeValue,

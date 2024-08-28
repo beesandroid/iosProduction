@@ -43,7 +43,7 @@ class _FeeInformationState extends State<FeeInformation> {
     int acYearId = prefs.getInt('acYearId') ?? 0;
     String collegeId = prefs.getString('collegeId') ?? '';
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/FeeDetials'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/FeeDetials'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -79,7 +79,7 @@ class _FeeInformationState extends State<FeeInformation> {
     int acYearId = prefs.getInt('acYearId') ?? 0;
     String collegeId = prefs.getString('collegeId') ?? '';
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/FeeDetials'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/FeeDetials'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -115,7 +115,7 @@ class _FeeInformationState extends State<FeeInformation> {
     int acYearId = prefs.getInt('acYearId') ?? 0;
     String collegeId = prefs.getString('collegeId') ?? '';
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/FeeDetials'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/FeeDetials'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -152,7 +152,7 @@ class _FeeInformationState extends State<FeeInformation> {
     int acYearId = prefs.getInt('acYearId') ?? 0;
     String collegeId = prefs.getString('collegeId') ?? '';
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/FeeDetials'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/FeeDetials'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

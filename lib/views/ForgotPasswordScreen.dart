@@ -31,7 +31,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Future<void> _sendOtp() async {
     if (_formKey.currentState!.validate()) {
       final apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Flutter/BETStudentInformation';
+          'https://mritsexams.com/CoreApi/Flutter/BETStudentInformation';
       final requestBody = {
         "GrpCode": _groupCodeController.text,
         "ColCode": "PSS",
@@ -81,7 +81,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
 
   Future<void> _sendForgotPasswordDetails(String mobile) async {
     final apiUrl =
-        'https://beessoftware.cloud/CoreAPI/Android/PostForgotPasswordDetails';
+        'https://mritsexams.com/CoreApi/Android/PostForgotPasswordDetails';
     final requestBody = {
       "GrpCode": _groupCodeController.text,
       "ColCode": "PSS",
@@ -303,7 +303,7 @@ class _VerifyOtpScreenState extends State<VerifyOtpScreen> {
 
   Future<void> _verifyOtp() async {
     final apiUrl =
-        'https://beessoftware.cloud/CoreAPI/Android/ForgotPasswordDetailsOTP';
+        'https://mritsexams.com/CoreApi/Android/ForgotPasswordDetailsOTP';
     final requestBody = {
       "GrpCode": widget.groupCode,
       "ColCode": "pss",
@@ -477,7 +477,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
 
   Future<void> _changePassword() async {
     final apiUrl =
-        'https://beessoftware.cloud/CoreAPI/Android/StudentLoginChangePassword';
+        'https://mritsexams.com/CoreApi/Android/StudentLoginChangePassword';
     final requestBody = {
       "GrpCode": widget.groupCode,
       "ColCode": "pss",

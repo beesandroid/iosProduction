@@ -35,7 +35,7 @@ class _FinalInternalMarksState extends State<FinalInternalMarks> {
         isLoading = true;
       });
       final response = await http.post(
-        Uri.parse('https://beessoftware.cloud/CoreAPI/Android/SemDropDown'),
+        Uri.parse('https://mritsexams.com/CoreApi/Android/SemDropDown'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -83,7 +83,7 @@ class _FinalInternalMarksState extends State<FinalInternalMarks> {
         isLoading = true;
       });
       final response = await http.post(
-        Uri.parse('https://beessoftware.cloud/CoreAPI/Android/FinalInternalMarksDisplay'),
+        Uri.parse('https://mritsexams.com/CoreApi/Android/FinalInternalMarksDisplay'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

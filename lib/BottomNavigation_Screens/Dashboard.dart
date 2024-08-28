@@ -75,7 +75,7 @@ class _DashboardState extends State<Dashboard> {
     int schoolid = prefs.getInt('schoolId') ?? 0;
     int studId = prefs.getInt('studId') ?? 0;
 
-    final apiUrl = 'https://beessoftware.cloud/CoreAPI/Android/GetNotificationDetails';
+    final apiUrl = 'https://mritsexams.com/CoreApi/Android/GetNotificationDetails';
     final requestBody = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",
@@ -499,7 +499,7 @@ class _DashboardState extends State<Dashboard> {
       String userNameValue = prefs.getString('userName') ?? '';
 
       String apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Flutter/StudDashBoardDetails';
+          'https://mritsexams.com/CoreApi/Flutter/StudDashBoardDetails';
       Map<String, String> requestBody = {
         'grpCode': grpCodeValue,
         'userName': userNameValue,

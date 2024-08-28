@@ -1,4 +1,4 @@
-package com.example.betplus_ios
+package com.beessoftware.betplus_ios
 
 import io.flutter.embedding.android.FlutterActivity
 

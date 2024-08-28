@@ -19,7 +19,7 @@ class _NewLoginState extends State<NewLogin> {
   String? groupPhotoUrl;
 
   final String apiUrlFirst =
-      'https://beessoftware.cloud/CoreAPI/Flutter/BETAppRegBeforeOTP';
+      'https://mritsexams.com/CoreApi/Flutter/BETAppRegBeforeOTP';
 
   final String collegeId = "0001";
   final String collegeCode = "PSS";
@@ -148,7 +148,7 @@ class _NewLoginState extends State<NewLogin> {
 
 
   Future<void> fetchGroupPhoto(String groupCode) async {
-    final apiUrl = 'https://beessoftware.cloud/CoreApi/Android/GetClgLogo';
+    final apiUrl = 'https://mritsexams.com/CoreApi/Android/GetClgLogo';
     final payload = jsonEncode(
         {"GrpCode": groupCode, "ColCode": "PSS", "CollegeId": "0001"});
 

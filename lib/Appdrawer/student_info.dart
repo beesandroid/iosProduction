@@ -58,7 +58,7 @@ class _student_profileState extends State<student_profile> {
       String userNameValue = prefs.getString('userName') ?? '';
 
       String apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Flutter/BETStudentinformation';
+          'https://mritsexams.com/CoreApi/Flutter/BETStudentinformation';
       Map<String, String> requestBody = {
         'grpCode': grpCodeValue,
         'userName': userNameValue,

@@ -79,7 +79,7 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
 
       final response = await http.post(
         Uri.parse(
-            'https://beessoftware.cloud/CoreAPI/Flutter/SaveSupplyFeeTempData'),
+            'https://mritsexams.com/CoreApi/Flutter/SaveSupplyFeeTempData'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -238,7 +238,7 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
 
       final response = await http.post(
         Uri.parse(
-            'https://beessoftware.cloud/CoreAPI/Android/SupplyFeeMainData'),
+            'https://mritsexams.com/CoreApi/Android/SupplyFeeMainData'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -332,7 +332,7 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
       String betCourseId = prefs.getString('betCourseId') ?? '';
       final response = await http.post(
         Uri.parse(
-            'https://beessoftware.cloud/CoreAPI/Android/FeeReceiptsReports'),
+            'https://mritsexams.com/CoreApi/Android/FeeReceiptsReports'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -410,7 +410,7 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
     int betStudUserId = prefs.getInt('betStudUserId') ?? 00;
     String betCourseId = prefs.getString('betCourseId') ?? '';
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/FeeDetials'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/FeeDetials'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -447,7 +447,7 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
     String betCourseId = prefs.getString('betCourseId') ?? '';
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/SupplyFeeCollectionValidation'),
+          'https://mritsexams.com/CoreApi/Android/SupplyFeeCollectionValidation'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -492,7 +492,7 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
     String betCourseId = prefs.getString('betCourseId') ?? '';
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/StudentDueSubjectSemesters'),
+          'https://mritsexams.com/CoreApi/Android/StudentDueSubjectSemesters'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -544,7 +544,7 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
 
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Flutter/StudentSupplyFeeDisplay'),
+          'https://mritsexams.com/CoreApi/Flutter/StudentSupplyFeeDisplay'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -599,7 +599,7 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
     String betCourseId = prefs.getString('betCourseId') ?? '';
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/getStudentDueSubjectSemWise'),
+          'https://mritsexams.com/CoreApi/Android/getStudentDueSubjectSemWise'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

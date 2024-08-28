@@ -51,7 +51,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     int studId = prefs.getInt('studId') ?? 0;
 
     final apiUrl =
-        'https://beessoftware.cloud/CoreAPI/Android/GetNotificationDetails';
+        'https://mritsexams.com/CoreApi/Android/GetNotificationDetails';
     final requestBody = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",
@@ -93,7 +93,7 @@ class _DownloadsScreenState extends State<DownloadsScreen> {
     String? colCode = prefs.getString('colCode');
     String? collegeId = prefs.getString('collegeId');
 
-    String apiUrl = 'https://beessoftware.cloud/CoreAPI/Flutter/MenuDetails';
+    String apiUrl = 'https://mritsexams.com/CoreApi/Flutter/MenuDetails';
     Map<String, dynamic> requestBody = {
       'grpCode': grpCode,
       "ColCode": colCode,

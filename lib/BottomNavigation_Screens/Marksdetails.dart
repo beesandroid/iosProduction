@@ -54,7 +54,7 @@ class _MarksdetailsState extends State<Marksdetails> {
       print('Group Code is: $grpCodeValue');
     }
 
-    String apiUrl = 'https://beessoftware.cloud/CoreAPI/Flutter/MenuDetails';
+    String apiUrl = 'https://mritsexams.com/CoreApi/Flutter/MenuDetails';
     Map<String, dynamic> requestBody = {
       'grpCode': grpCodeValue,
       "ColCode": "pss",
@@ -91,7 +91,7 @@ class _MarksdetailsState extends State<Marksdetails> {
     int schoolid = prefs.getInt('schoolId') ?? 0;
     int studId = prefs.getInt('studId') ?? 0;
 
-    final apiUrl = 'https://beessoftware.cloud/CoreAPI/Android/GetNotificationDetails';
+    final apiUrl = 'https://mritsexams.com/CoreApi/Android/GetNotificationDetails';
     final requestBody = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",

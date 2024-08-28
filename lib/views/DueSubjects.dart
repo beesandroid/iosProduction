@@ -43,7 +43,7 @@ class _DueSubjectsTableState extends State<DueSubjectsTable> {
       };
 
       final response = await http.post(
-        Uri.parse('https://beessoftware.cloud/CoreAPI/Android/StudDueSubjectDetails'),
+        Uri.parse('https://mritsexams.com/CoreApi/Android/StudDueSubjectDetails'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
           // Add any headers if required

@@ -234,7 +234,7 @@ class _DropdownMenusState extends State<DropdownMenus> {
     int userType = prefs.getInt('userType') ?? 0;
 
     final apiUrl =
-        'https://beessoftware.cloud/CoreAPI/Android/BETAppComplaintsSaving';
+        'https://mritsexams.com/CoreApi/Android/BETAppComplaintsSaving';
     final requestBody = {
       "GrpCode": grpCodeValue,
       "CollegeId": "0001",

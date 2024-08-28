@@ -149,7 +149,7 @@ class NotificationHandler {
     print(
         'Request Body: ${json.encode(body)}'); // Print request body for debugging
 
-    const url = 'https://beessoftware.cloud/CoreAPI/Android/FMCTokenSaving';
+    const url = 'https://mritsexams.com/CoreApi/Android/FMCTokenSaving';
     final Map<String, String> headers = {'Content-Type': 'application/json'};
 
     try {

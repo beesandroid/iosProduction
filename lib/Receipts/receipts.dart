@@ -244,7 +244,7 @@ class _ReceiptsPageState extends State<ReceiptsPage> {
       int studId = prefs.getInt('studId') ?? 0;
 
       String apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Android/StudFeeReceiptsDetails';
+          'https://mritsexams.com/CoreApi/Android/StudFeeReceiptsDetails';
       Map<String, dynamic> requestBody = {
         'GrpCode': grpCodeValue,
         'ColCode': 'PSS',
@@ -296,7 +296,7 @@ class _ReceiptsPageState extends State<ReceiptsPage> {
       int schoolid = prefs.getInt('schoolId') ?? 00;
 
       String apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Android/FeeReceiptsReports';
+          'https://mritsexams.com/CoreApi/Android/FeeReceiptsReports';
 
       int recIdInt = int.parse(recId);
 
@@ -310,6 +310,7 @@ class _ReceiptsPageState extends State<ReceiptsPage> {
         "Words": "rupees only",
         "Flag": recTypeId
       };
+      print(requestBody);
 
       http.Response downloadResponse = await http.post(
         Uri.parse(apiUrl),

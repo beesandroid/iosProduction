@@ -51,7 +51,7 @@ class _ExternalViewState extends State<ExternalView> {
     String betCourseId = prefs.getString('betCourseId') ?? '';
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/ExternalExamTimeTableExamTypeDropdown'),
+          'https://mritsexams.com/CoreApi/Android/ExternalExamTimeTableExamTypeDropdown'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -96,7 +96,7 @@ class _ExternalViewState extends State<ExternalView> {
     int betStudUserId = prefs.getInt('betStudUserId') ?? 00;
     String betCourseId = prefs.getString('betCourseId') ?? '';
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/SemDropDown'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/SemDropDown'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -147,7 +147,7 @@ class _ExternalViewState extends State<ExternalView> {
 
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/ExamTimeTableMonthYearDropDown'),
+          'https://mritsexams.com/CoreApi/Android/ExamTimeTableMonthYearDropDown'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -204,7 +204,7 @@ class _ExternalViewState extends State<ExternalView> {
 
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/HallTicketsDownloadReports'),
+          'https://mritsexams.com/CoreApi/Android/HallTicketsDownloadReports'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

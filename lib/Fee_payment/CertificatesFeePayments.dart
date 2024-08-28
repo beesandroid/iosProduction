@@ -33,7 +33,7 @@ class _CertificateFeePaymentsState extends State<CertificateFeePayments> {
   Future<void> fetchData() async {
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Flutter/CertificateDropDownForFlutter'),
+          'https://mritsexams.com/CoreApi/Flutter/CertificateDropDownForFlutter'),
       body: json.encode({
         "GrpCode": "bees",
         "ColCode": "pss",
@@ -89,7 +89,7 @@ class _CertificateFeePaymentsState extends State<CertificateFeePayments> {
 
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Flutter/CertificateDropDownForFlutter'),
+          'https://mritsexams.com/CoreApi/Flutter/CertificateDropDownForFlutter'),
       body: requestBody,
       headers: {'Content-Type': 'application/json'},
     );

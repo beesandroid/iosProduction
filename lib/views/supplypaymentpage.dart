@@ -62,7 +62,7 @@ class _SupplyPaymentPageState extends State<SupplyPaymentPage> {
 
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Flutter/SaveSupplyFeeTempData'),
+          'https://mritsexams.com/CoreApi/Flutter/SaveSupplyFeeTempData'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

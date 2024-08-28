@@ -36,7 +36,7 @@ class _midMarksState extends State<midMarks> {
     });
     try {
       final response = await http.post(
-        Uri.parse('https://beessoftware.cloud/CoreAPI/Android/IntMarksDetails'),
+        Uri.parse('https://mritsexams.com/CoreApi/Android/IntMarksDetails'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -90,7 +90,7 @@ class _midMarksState extends State<midMarks> {
 
       int studId = prefs.getInt('studId') ?? 0;
       final response = await http.post(
-        Uri.parse('https://beessoftware.cloud/CoreAPI/Android/IntMarksDetails'),
+        Uri.parse('https://mritsexams.com/CoreApi/Android/IntMarksDetails'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

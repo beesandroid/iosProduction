@@ -35,7 +35,7 @@ class _OverallPerfState extends State<OverallPerf> {
     String grpCodeValue = prefs.getString('grpCode') ?? '';
     int schoolId = prefs.getInt('schoolId') ?? 0;
     int studId = prefs.getInt('studId') ?? 0;
-    final url = 'https://beessoftware.cloud/CoreAPI/Android/AllSems';
+    final url = 'https://mritsexams.com/CoreApi/Android/AllSems';
     final requestPayload = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",
@@ -82,7 +82,7 @@ class _OverallPerfState extends State<OverallPerf> {
       });
 
       final response = await http.post(
-        Uri.parse('https://beessoftware.cloud/CoreAPI/Android/OverAllMarksSemWise'),
+        Uri.parse('https://mritsexams.com/CoreApi/Android/OverAllMarksSemWise'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

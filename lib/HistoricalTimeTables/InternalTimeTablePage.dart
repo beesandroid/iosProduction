@@ -31,7 +31,7 @@ class _InternalTimeTablePageState extends State<InternalTimeTablePage> {
     String betCurid = prefs.getString('betCurid') ?? '';
 
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/InternalExamDropDown'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/InternalExamDropDown'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -63,7 +63,7 @@ class _InternalTimeTablePageState extends State<InternalTimeTablePage> {
     String betCurid = prefs.getString('betCurid') ?? '';
 
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/InternalExamDivisionDropDown'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/InternalExamDivisionDropDown'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -122,7 +122,7 @@ class _InternalTimeTablePageState extends State<InternalTimeTablePage> {
     print('Request Body: $requestBody');
 
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/InternalExamTimeTableDisplay'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/InternalExamTimeTableDisplay'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

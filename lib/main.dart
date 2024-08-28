@@ -96,7 +96,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
   }
 
   Future<void> fetchGroupPhoto(String groupCode) async {
-    final apiUrl = 'https://beessoftware.cloud/CoreApi/Android/GetClgLogo';
+    final apiUrl = 'https://mritsexams.com/CoreApi/Android/GetClgLogo';
     final payload = jsonEncode(
         {"GrpCode": groupCode, "ColCode": "PSS", "CollegeId": "0001"});
 
@@ -165,7 +165,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     print(payload);
 
     final apiUrl =
-        'https://beessoftware.cloud/CoreAPI/Flutter/GetUserDetails'; // Consider making this a constant
+        'https://mritsexams.com/CoreApi/Flutter/GetUserDetails'; // Consider making this a constant
 
     try {
       final response = await http.post(
@@ -252,7 +252,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
       String userNameValue = prefs.getString('userName') ?? '';
 
       String apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Flutter/BETStudentInformation';
+          'https://mritsexams.com/CoreApi/Flutter/BETStudentInformation';
       Map<String, String> requestBody = {
         'grpCode': grpCodeValue,
         'userName': userNameValue,

@@ -40,7 +40,7 @@ class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
     String collegeId = prefs.getString('collegeId') ?? '';
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/ExternalExamTimeTableExamTypeDropdown'),
+          'https://mritsexams.com/CoreApi/ExternalExamTimeTableExamTypeDropdown'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -80,7 +80,7 @@ class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
     int acYearId = prefs.getInt('acYearId') ?? 00;
     String collegeId = prefs.getString('collegeId') ?? '';
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/SemDropDown'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/SemDropDown'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -120,7 +120,7 @@ class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
     String collegeId = prefs.getString('collegeId') ?? '';
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/ExamTimeTableMonthYearDropDown'),
+          'https://mritsexams.com/CoreApi/Android/ExamTimeTableMonthYearDropDown'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -162,7 +162,7 @@ class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
     String betBranchcode = prefs.getString('betBranchcode') ?? '';
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/ExternalExamTimeTableDisplay'),
+          'https://mritsexams.com/CoreApi/Android/ExternalExamTimeTableDisplay'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },

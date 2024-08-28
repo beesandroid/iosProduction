@@ -45,7 +45,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
     int schoolid = prefs.getInt('schoolId') ?? 00;
     int studId = prefs.getInt('studId') ?? 00;
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/FeeDetials'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/FeeDetials'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -76,7 +76,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
     int schoolid = prefs.getInt('schoolId') ?? 00;
     int studId = prefs.getInt('studId') ?? 00;
     final response = await http.post(
-      Uri.parse('https://beessoftware.cloud/CoreAPI/Android/StudentValidation'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/StudentValidation'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -121,7 +121,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
     int studId = prefs.getInt('studId') ?? 00;
     final response = await http.post(
       Uri.parse(
-          'https://beessoftware.cloud/CoreAPI/Android/StudFeeFillDetails'),
+          'https://mritsexams.com/CoreApi/Android/StudFeeFillDetails'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -638,7 +638,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
     try {
       final response = await http.post(
         Uri.parse(
-            'https://beessoftware.cloud/CoreAPI/Flutter/SaveRegularFeeTempData'),
+            'https://mritsexams.com/CoreApi/Flutter/SaveRegularFeeTempData'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -712,7 +712,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
       String collegeId = prefs.getString('collegeId') ?? '';
       final response = await http.post(
         Uri.parse(
-            'https://beessoftware.cloud/CoreAPI/Android/SaveRegularFeeMainData'),
+            'https://mritsexams.com/CoreApi/Android/SaveRegularFeeMainData'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
@@ -818,7 +818,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
 
       final response = await http.post(
         Uri.parse(
-            'https://beessoftware.cloud/CoreAPI/Android/FeeReceiptsReports'),
+            'https://mritsexams.com/CoreApi/Android/FeeReceiptsReports'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

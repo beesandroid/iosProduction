@@ -50,7 +50,7 @@ class _FeePaymentsState extends State<FeePayments> {
     int schoolid = prefs.getInt('schoolId') ?? 0;
     int studId = prefs.getInt('studId') ?? 0;
 
-    final apiUrl = 'https://beessoftware.cloud/CoreAPI/Android/GetNotificationDetails';
+    final apiUrl = 'https://mritsexams.com/CoreApi/Android/GetNotificationDetails';
     final requestBody = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",
@@ -87,7 +87,7 @@ class _FeePaymentsState extends State<FeePayments> {
   Future<List<MenuDetailsList>> fetchMenuDetailsList() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String grpCodeValue = prefs.getString('grpCode') ?? '';
-    String apiUrl = 'https://beessoftware.cloud/CoreAPI/Flutter/MenuDetails';
+    String apiUrl = 'https://mritsexams.com/CoreApi/Flutter/MenuDetails';
     Map<String, dynamic> requestBody = {
       'grpCode': grpCodeValue,
       "ColCode": "pss",

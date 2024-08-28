@@ -176,7 +176,7 @@ class OtpValidating extends StatelessWidget {
   Future<void> _verifyOTP(BuildContext context, String enteredOTP) async {
     try {
       String apiUrl =
-          'https://beessoftware.cloud/CoreAPI/Android/VerifyStudentDetailsForRegistration';
+          'https://mritsexams.com/CoreApi/Android/VerifyStudentDetailsForRegistration';
       Map<String, dynamic> requestBody = {
         'GrpCode': groupCode,
         'ColCode': 'PSS',
