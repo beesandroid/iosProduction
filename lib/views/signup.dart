@@ -106,6 +106,7 @@ class _SignUpState extends State<SignUp> {
         'password': passwordValue,
         'userType': 2,
       };
+      print(requestBody);
 
       http.Response response = await http.post(
         Uri.parse(apiUrl),
@@ -126,9 +127,10 @@ class _SignUpState extends State<SignUp> {
             : '';
 
         String bdorderid = responseBody['bdorderid'] ?? '';
+        String orderid = responseBody['orderid'] ?? '';
         String mercid = responseBody['mercid'] ?? '';
 
-        await callSecondAPI(bdorderid, mercid);
+        await callSecondAPI(bdorderid, mercid,orderid);
 
         Navigator.push(
           context,
@@ -150,7 +152,7 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  Future<void> callSecondAPI(String bdorderid, String mercid) async {
+  Future<void> callSecondAPI(String bdorderid, String mercid, String orderid) async {
     try {
       String emailValue = email.text.trim();
       String pass = password.text.trim();
@@ -158,7 +160,7 @@ class _SignUpState extends State<SignUp> {
           'https://mritsexams.com/CoreApi/Android/BilldeskPaymentLogs';
       Map<String, dynamic> requestBody = {
         'mercId': mercid,
-        'orderId': bdorderid,
+        'orderId': orderid,
         'transactionDate': DateTime.now().toIso8601String(),
         'amount': fee,
         'grpCode': widget.grpCode,
