@@ -1,10 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_styled_toast/flutter_styled_toast.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
-
 import '../webview_screen.dart';
 
 class SignUp extends StatefulWidget {
@@ -55,6 +53,7 @@ class _SignUpState extends State<SignUp> {
         'SchoolId': '1',
         'AdmnNo': widget.userName,
       };
+      print(requestBody);
 
       http.Response response = await http.post(
         Uri.parse(apiUrl),
@@ -66,6 +65,7 @@ class _SignUpState extends State<SignUp> {
 
       if (response.statusCode == 200) {
         Map<String, dynamic> responseBody = jsonDecode(response.body);
+        print(responseBody.toString());
 
         if (responseBody['singlRegistrationFeeDisplayList'] != null &&
             responseBody['singlRegistrationFeeDisplayList']['status'] == 0) {
@@ -74,7 +74,7 @@ class _SignUpState extends State<SignUp> {
             fee = responseBody['singlRegistrationFeeDisplayList']
                     ['registrationFee']
                 .toString();
-            print("ffffffff"+fee);
+            print("ffffffff" + fee);
           });
         }
       }
@@ -130,7 +130,7 @@ class _SignUpState extends State<SignUp> {
         String orderid = responseBody['orderid'] ?? '';
         String mercid = responseBody['mercid'] ?? '';
 
-        await callSecondAPI(bdorderid, mercid,orderid);
+        await callSecondAPI(bdorderid, mercid, orderid);
 
         Navigator.push(
           context,
@@ -152,7 +152,8 @@ class _SignUpState extends State<SignUp> {
     }
   }
 
-  Future<void> callSecondAPI(String bdorderid, String mercid, String orderid) async {
+  Future<void> callSecondAPI(
+      String bdorderid, String mercid, String orderid) async {
     try {
       String emailValue = email.text.trim();
       String pass = password.text.trim();

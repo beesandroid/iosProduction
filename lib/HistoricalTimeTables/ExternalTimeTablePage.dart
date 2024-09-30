@@ -38,24 +38,31 @@ class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
     int fYearId = prefs.getInt('fYearId') ?? 00;
     int acYearId = prefs.getInt('acYearId') ?? 00;
     String collegeId = prefs.getString('collegeId') ?? '';
+
+    var requestBody = {
+      "GrpCode": grpCodeValue,
+      "ColCode": "pss",
+      "CollegeId": "0001",
+      "SchoolId": schoolid,
+      "StudId": studId,
+      "Sem": ""
+    };
+
+    // Print request body
+    print("Request Body: $requestBody");
+
     final response = await http.post(
       Uri.parse(
-          'https://mritsexams.com/CoreApi/ExternalExamTimeTableExamTypeDropdown'),
+          'https://mritsexams.com/CoreApi/Android/ExternalExamTimeTableExamTypeDropdown'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode({
-        "GrpCode": grpCodeValue,
-        "ColCode": "pss",
-        "CollegeId": "0001",
-        "SchoolId": schoolid,
-        "StudId": studId,
-        "Sem": ""
-      }),
+      body: jsonEncode(requestBody),
     );
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
+      print(responseData);
       setState(() {
         examTypes = List<String>.from(
             responseData['examTypesList'].map((item) => item['examType']));
@@ -209,6 +216,7 @@ class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.lightGreen,
         title: const Text(
           'External Exam TimeTable',

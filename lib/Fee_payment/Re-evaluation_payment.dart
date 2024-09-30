@@ -1038,10 +1038,11 @@ class _ReevaluationState extends State<Reevaluation> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.lightGreen,
         title: Text(
           "Re-Evaluation Fee Payments",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
         ),
       ),
       body: _isLoading

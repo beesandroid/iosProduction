@@ -141,8 +141,8 @@ class _InternalTimeTablePageState extends State<InternalTimeTablePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
+    return Scaffold(backgroundColor: Colors.white,
+      appBar: AppBar(iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.lightGreen,
         title: const Text(
           'Internal Timetable',

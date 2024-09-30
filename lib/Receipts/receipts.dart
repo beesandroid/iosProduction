@@ -30,7 +30,7 @@ class _ReceiptsPageState extends State<ReceiptsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Scaffold(backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.lightGreen,
         title: const Text(
@@ -254,6 +254,7 @@ class _ReceiptsPageState extends State<ReceiptsPage> {
         'Str': '',
         'Flag': '0'
       };
+      print(requestBody);
 
       http.Response response = await http.post(
         Uri.parse(apiUrl),

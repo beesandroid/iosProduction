@@ -149,8 +149,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     });
   }
 
-  Future<void> login(BuildContext context, String grpCode, String userName,
-      String password) async {
+  Future<void> login(BuildContext context, String grpCode, String userName, String password) async {
     if (grpCode.isEmpty || userName.isEmpty || password.isEmpty) {
       showToast('Please enter all fields', context: context);
       return;
@@ -164,8 +163,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     });
     print(payload);
 
-    final apiUrl =
-        'https://mritsexams.com/CoreApi/Flutter/GetUserDetails'; // Consider making this a constant
+    final apiUrl = 'https://mritsexams.com/CoreApi/Flutter/GetUserDetails';
 
     try {
       final response = await http.post(
@@ -176,22 +174,21 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
         body: payload,
       );
 
-      final responseBody =
-          jsonDecode(response.body); // Parse response body here
-
       if (response.statusCode == 200) {
-        print(response.body);
-        // Check if response contains specific error message
+        final responseBody = jsonDecode(response.body);
+        print("2222" + response.body);
+
+        // Check if registration is not done
         if (responseBody['message'] != null &&
-            responseBody['message'] ==
-                "Registration is not done. Go to Signup") {
+            responseBody['message'] == "Registration is not done. Go to Signup") {
           showToast(responseBody['message'], context: context);
           return;
         }
+
         _checkLoginStatus();
 
+        // Save data to SharedPreferences
         final prefs = await SharedPreferences.getInstance();
-
         if (isChecked) {
           prefs.setString('grpCode', grpCode);
           prefs.setString('userName', userName);
@@ -202,6 +199,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           prefs.remove('password');
         }
 
+        // Save all keys and values to SharedPreferences
         responseBody.forEach((key, value) {
           if (value is String) {
             prefs.setString(key, value);
@@ -218,29 +216,38 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
           }
         });
         prefs.setBool('isLoggedIn', true);
+
+        // Handle Firebase token
         final notificationHandler = NotificationHandler();
-        await notificationHandler.init(context); // Ensure token is fetched
+        await notificationHandler.init(context);
         String? token = await FirebaseMessaging.instance.getToken();
         if (token != null) {
           await notificationHandler.saveTokenToServer(token);
         } else {
           print('Failed to get FCM token');
         }
+
+        // Navigate to Profile screen
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => Profile()),
         );
 
-        showToast('Login Successfully',
-            context: context); // Show success message
-      } else {
-        showToast(responseBody['message'],
-            context: context); // Show error message
+        // Show success message
+        showToast('Login Successfully', context: context);
+      }
+      // Handle server offline (status 500)
+      else if (response.statusCode == 500) {
+        showToast("Server Offline. Please try again later.", context: context);
+      }
+      // Other errors
+      else {
+        final responseBody = jsonDecode(response.body);
+        showToast(responseBody['message'] ?? 'Login failed', context: context);
       }
     } catch (e) {
       print('Error during login: $e');
-      showToast('Failed to login. Please try again later.',
-          context: context); // Show generic error message
+      showToast('Failed to login. Please try again later.', context: context);
     }
   }
 

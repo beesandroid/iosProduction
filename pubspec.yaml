@@ -108,6 +108,7 @@ flutter:
     - asset/otp.png
     - asset/splashscreen.png
     - asset/splash.png
+    - asset/img.png
 
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg

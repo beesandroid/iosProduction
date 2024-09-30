@@ -112,15 +112,17 @@ class _DashboardState extends State<Dashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Dashboard',
-          style: TextStyle(
-            fontWeight: FontWeight.bold,
-            fontSize: 29,
-            color: Color(0xFF13497B),
-          ),
-        ),
+      appBar:
+      AppBar(
+          title: const Text(
+            'Dashboard',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 29,
+              color: Color(0xFF13497B),
+            ),
+          ),backgroundColor: Colors.white,
+
         actions: [
           Stack(
             children: [
@@ -169,7 +171,8 @@ class _DashboardState extends State<Dashboard> {
           ? Center(
               child: CircularProgressIndicator(),
             )
-          : SingleChildScrollView(
+          :
+      SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [

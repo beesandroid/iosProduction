@@ -671,10 +671,11 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
         backgroundColor: Colors.lightGreen,
         title: Text(
           'Supply Fee Payment',
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Colors.white,fontWeight: FontWeight.bold),
         ),
       ),
       body: FutureBuilder<FeeDetailsResponse>(

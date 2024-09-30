@@ -1,281 +1,411 @@
 import 'dart:convert';
-
+import 'package:betplus_ios/Fee_payment/duplicates.dart'; // Assuming this is your duplicates widget
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:provider/provider.dart';
-
-import '../views/PROVIDER.dart';
+import 'package:paytm_allinonesdk/paytm_allinonesdk.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CertificateFeePayments extends StatefulWidget {
-  const CertificateFeePayments({Key? key}) : super(key: key);
+  const CertificateFeePayments({super.key});
 
   @override
   State<CertificateFeePayments> createState() => _CertificateFeePaymentsState();
 }
 
-class CertificateInfo {
-  final int certificateId;
-  int selectedCopies;
-
-  CertificateInfo({required this.certificateId, this.selectedCopies = 0});
-}
-
 class _CertificateFeePaymentsState extends State<CertificateFeePayments> {
-  List<Map<String, dynamic>> _certificates = [];
-  Map<int, CertificateInfo> _selectedCopies = {};
+  final PageController _pageController = PageController();
+  List certificates = [];
+  Map<int, int> selectedCopies = {}; // Maps certificateId to selected copies
+  double totalAmount = 0.0;
 
   @override
   void initState() {
     super.initState();
-    fetchData();
+    fetchCertificates();
   }
 
-  Future<void> fetchData() async {
-    final response = await http.post(
-      Uri.parse(
-          'https://mritsexams.com/CoreApi/Flutter/CertificateDropDownForFlutter'),
-      body: json.encode({
-        "GrpCode": "bees",
-        "ColCode": "pss",
-        "CollegeId": "0001",
-        "SchoolId": "1",
-        "Flag": "0",
-        "CertificateIds": "",
-        "Copies": ""
-      }),
-      headers: {'Content-Type': 'application/json'},
-    );
+  Future<void> fetchCertificates() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String admnNo = prefs.getString('admnNo') ?? '';
+    String grpCodeValue = prefs.getString('grpCode') ?? '';
+    int schoolId = prefs.getInt('schoolId') ?? 0;
+    int studId = prefs.getInt('studId') ?? 0;
+    const url =
+        'https://mritsexams.com/CoreAPI/Flutter/CertificateDropDownForFlutter';
+    final requestBody = {
+      "GrpCode": grpCodeValue,
+      "ColCode": "PSS",
+      "CollegeId": "0001",
+      "SchoolId": schoolId,
+      "Flag": 0,
+      "StudId": studId,
+      "StudentOnlineCertificatesVariable": [
+        {
+          "CertificateId": 0,
+          "Copies": 0,
+          "ExamType": "",
+          "Sem": "",
+          "MonthYear": "",
+          "CopyType": 0
+        }
+      ]
+    };
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(requestBody),
+      );
 
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      setState(() {
-        _certificates = List<Map<String, dynamic>>.from(
-            jsonData['cerificatesDropDownForFlutterList']);
-        _selectedCopies = Map.fromIterable(_certificates,
-            key: (certificate) => certificate['certificateId'],
-            value: (certificate) =>
-                CertificateInfo(certificateId: certificate['certificateId']));
-      });
-    } else {
-      throw Exception('Failed to load data');
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        setState(() {
+          certificates = data['cerificatesDropDownForFlutterList']
+              .where((certificate) =>
+                  certificate['certificateId'] != 4 &&
+                  certificate['certificateId'] != 1)
+              .toList();
+
+          // Initialize selectedCopies with 0 for each certificate
+          selectedCopies = {
+            for (var certificate in certificates)
+              certificate['certificateId']: 0,
+          };
+        });
+      } else {
+        print("Failed to fetch certificates");
+      }
+    } catch (e) {
+      print("Error fetching certificates: $e");
     }
   }
 
-  Future<void> fetchBottomSheet() async {
-    final userDetails =
-        Provider.of<UserProvider>(context, listen: false).userDetails;
-    // Filter _selectedCopies to include only checked values
-    final checkedCertificates = _selectedCopies.entries
-        .where((entry) => entry.value.selectedCopies > 0);
-
-    final List<int> selectedCertificateIds = [];
-    final List<int> selectedCopies = [];
-    checkedCertificates.forEach((entry) {
-      selectedCertificateIds.add(entry.key);
-      selectedCopies.add(entry.value.selectedCopies);
+  // Function to handle number of copies selection
+  void selectCopies(int certificateId, int copies) {
+    setState(() {
+      selectedCopies[certificateId] = copies;
     });
-
-    final requestBody = json.encode({
-      "GrpCode": userDetails?.grpCode,
-      "ColCode": userDetails?.colCode,
-      "CollegeId": userDetails?.collegeId,
-      "SchoolId": "1",
-      "Flag": "1",
-      "CertificateIds": selectedCertificateIds.join(","),
-      "Copies": selectedCopies.join(","),
-    });
-
-    print("Request Body: $requestBody");
-
-    final response = await http.post(
-      Uri.parse(
-          'https://mritsexams.com/CoreApi/Flutter/CertificateDropDownForFlutter'),
-      body: requestBody,
-      headers: {'Content-Type': 'application/json'},
-    );
-
-    if (response.statusCode == 200) {
-      final jsonData = json.decode(response.body);
-      print("Response Body: ${response.body}");
-
-      _showBottomSheet(jsonData);
-    } else {
-      throw Exception('Failed to load data');
-    }
   }
 
-  void _showBottomSheet(dynamic responseData) {
-    final List<dynamic> certificatesData =
-        responseData['cerificatesDropDownForFlutterList'];
-    int grandTotal = 0;
+  // Function to calculate total copies
+  int getTotalCopies() {
+    return selectedCopies.values
+        .fold(0, (previousValue, copies) => previousValue + copies);
+  }
 
-    for (final certificateData in certificatesData) {
-      grandTotal +=
-          certificateData['totalAmount'] as int; // No need to cast to String
+  // Function to handle the "Show Total" button click
+  Future<void> showTotal() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String admnNo = prefs.getString('admnNo') ?? '';
+    String grpCodeValue = prefs.getString('grpCode') ?? '';
+    int schoolId = prefs.getInt('schoolId') ?? 0;
+    int studId = prefs.getInt('studId') ?? 0;
+    final selectedCertificates = selectedCopies.entries
+        .where((entry) => entry.value > 0)
+        .map((entry) => {
+              "CertificateId": entry.key,
+              "Copies": entry.value,
+            })
+        .toList();
+
+    if (selectedCertificates.isEmpty) {
+      showDialog(
+          context: context,
+          builder: (context) => const AlertDialog(
+                title: Text("No Selection"),
+                content: Text("Please select at least one certificate."),
+              ));
+      return;
     }
+    // Prepare data for the API request
+    final List<Map<String, dynamic>> studentCertificates = selectedCopies
+        .entries
+        .where((entry) =>
+            entry.value > 0) // Only include certificates with copies > 0
+        .map((entry) => {
+              "CertificateId": entry.key,
+              "Copies": entry.value,
+              "ExamType": "",
+              "Sem": "",
+              "MonthYear": "",
+              "CopyType": 0
+            })
+        .toList();
 
-    showModalBottomSheet(
-      context: context,
-      builder: (context) {
-        return Container(
-          padding: EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  itemCount: certificatesData.length,
-                  itemBuilder: (context, index) {
-                    final certificateData = certificatesData[index];
-                    final certificateName = certificateData['certificateName'];
-                    final amount = certificateData['amount'];
-                    final totalAmount = certificateData['totalAmount'];
+    final requestBody = {
+      "GrpCode": grpCodeValue,
+      "ColCode": "PSS",
+      "CollegeId": "0001",
+      "SchoolId": schoolId,
+      "Flag": 1,
+      "FYearId": 0,
+      "CertificateIds": "",
+      "Copies": "",
+      "CaptchaImg": "",
+      "PaymentDate": "",
+      "StudId": studId,
+      "ReValFee": 0,
+      "AdmnNo": admnNo,
+      "ReCountFee": 0,
+      "RevalFine": 0,
+      "Sem": "",
+      "ExamMonth": "",
+      "ExamType": "",
+      "AtomTransId": "",
+      "MerchantTransId": "",
+      "TransAmt": "0.0",
+      "TransSurChargeAmt": "0.0",
+      "TransDate": "",
+      "BankTransId": "",
+      "TransStatus": "",
+      "BankName": "",
+      "PaymentDonethrough": "",
+      "CardNumber": "",
+      "CardHolderName": "",
+      "Email": "",
+      "MobileNo": "",
+      "Address": "",
+      "TransDescription": "",
+      "Success": 0,
+      "NewTxnIdMain": 0,
+      "AcyearId": 0,
 
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Certificate Name: $certificateName',
-                            style: TextStyle(fontSize: 18.0),
-                          ),
-                          SizedBox(height: 8.0),
-                          Text(
-                            'Amount: $amount',
-                            style: TextStyle(fontSize: 18.0),
-                          ),
-                          SizedBox(height: 8.0),
-                          Text(
-                            'Total Amount: $totalAmount',
-                            style: TextStyle(fontSize: 18.0),
-                          ),
-                          Divider(), // Add a divider between certificates
-                        ],
-                      ),
-                    );
-                  },
-                ),
+      "StudentOnlineCertificatesVariable": studentCertificates,
+    };
+    print(requestBody);
+
+    // Call the API with selected values
+    const url =
+        'https://mritsexams.com/CoreAPI/Flutter/CertificateDropDownForFlutter';
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        print(response.body);
+
+        // Extract certificates list
+        final certificatesList =
+            data['cerificatesDropDownForFlutterList'] as List<dynamic>;
+
+        // Prepare the message to display
+        StringBuffer messageBuffer = StringBuffer();
+        int grandTotal = 0;
+
+        for (var certificate in certificatesList) {
+          final certificateName =
+              certificate['certificateName'] ?? "Unknown Certificate";
+          final totalAmount =
+              (certificate['totalAmount'] ?? 0) as num; // Get as num
+          grandTotal +=
+              totalAmount.toInt(); // Convert to int and add to grandTotal
+          messageBuffer.writeln("$certificateName: ${totalAmount}");
+        }
+        messageBuffer.writeln("\nGrand Total: ${grandTotal}");
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text("Total Amount"),
+            content: SingleChildScrollView(child: Text(messageBuffer.toString())),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  // Extract Paytm details for transaction
+                  final paytmDetails = data['paytmDetailsList']?[0];
+                  if (paytmDetails != null) {
+                    final productId = paytmDetails['productId'] ?? '';
+                    final ordeR_ID = paytmDetails['ordeR_ID'] ?? '';
+                    final callbacK_URL = paytmDetails['callbacK_URL'] ?? '';
+                    final txnToken = paytmDetails['paytmResponseCertificates']['body']['txnToken'] ?? '';
+
+                    // Close the dialog
+                    Navigator.of(context).pop();
+
+                    // Proceed with Paytm payment
+                    initiatePaytmTransaction(txnToken, productId, grandTotal, ordeR_ID, callbacK_URL);
+                  } else {
+                    print("No Paytm details found");
+                    Navigator.of(context).pop(); // Close the dialog if no details found
+                  }
+                },
+                child: const Text("Proceed to Pay"),
               ),
-              SizedBox(height: 16.0),
-              Text(
-                'Grand Total: $grandTotal',
-                style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(), // Close the dialog
+                child: const Text("Cancel"),
               ),
             ],
           ),
         );
-      },
-    );
+      } else {
+        print("Failed to fetch total");
+      }
+    } catch (e) {
+      print("Error fetching total: $e");
+    }
+  }
+
+  Future<void> initiatePaytmTransaction(
+      String txnToken,
+      String productId,
+      int amount,
+      String orderId, // Fixed capitalization
+      String callbackUrl // Fixed capitalization
+      ) async {
+    try {
+      //   mid,
+      // orderId,
+      // amount.toString(),
+      // responseData!['paytmResponseCondonation']['body']['txnToken'],
+      // callbackUrl,
+      // isStaging,
+      // restrictAppInvoke,
+      print("Initiating Paytm transaction with:");
+      print("Product ID: $productId");
+      print("Transaction Token: $txnToken");
+      print("Amount: $amount");
+      print("Order ID: $orderId");
+      print("Callback URL: $callbackUrl");
+
+      var response = AllInOneSdk.startTransaction(
+          productId,
+          orderId,
+
+          amount.toString(),
+          // Amount
+          txnToken,
+          // Order ID
+          callbackUrl,
+          // Callback URL (If available)
+          false,
+          // Is Staging (for testing set true, for production set false)
+          false // Enable 4G optimization
+      );
+
+      response.then((value) {
+        print("Transaction Successful: $value");
+        // Handle the response from Paytm after transaction completes.
+        // You can navigate the user to a success page or show a confirmation dialog.
+      }).catchError((onError) {
+        print("Transaction failed: $onError");
+        // Handle transaction failure here
+      });
+    } catch (e) {
+      print("Error in initiating Paytm transaction: $e");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Certificates',
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: Colors.lightGreen,
-      ),
-      body: ListView.builder(
-        itemCount: _certificates.length,
-        itemBuilder: (context, index) {
-          final certificate = _certificates[index];
-          final certificateId = certificate['certificateId'];
-          final selectedCopiesInfo = _selectedCopies[certificateId]!;
-          final selectedCopiesCount = selectedCopiesInfo.selectedCopies;
-
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: ListTile(
-                dense: true,
-                contentPadding: EdgeInsets.symmetric(horizontal: 16.0),
-                title: Row(
-                  children: [
-                    Checkbox(
-                      value: selectedCopiesCount > 0,
-                      onChanged: (bool? value) {
-                        setState(() {
-                          if (value != null && value) {
-                            selectedCopiesInfo.selectedCopies = 1;
-                          } else {
-                            selectedCopiesInfo.selectedCopies = 0;
-                          }
-                        });
-                      },
-                    ),
-                    SizedBox(width: 8.0),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            certificate['certificateName'],
-                            style: TextStyle(fontSize: 16.0),
-                          ),
-                          SizedBox(height: 4.0),
-                          Text(
-                            'Certificate ID: $certificateId',
-                            style:
-                                TextStyle(fontSize: 12.0, color: Colors.grey),
-                          ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(width: 20),
-                    DropdownButton<int>(
-                      value: selectedCopiesCount,
-                      onChanged: (int? value) {
-                        setState(() {
-                          if (value != null && value >= 0) {
-                            selectedCopiesInfo.selectedCopies = value;
-                          }
-                        });
-                      },
-                      items: List.generate(
-                              11,
-                              (index) =>
-                                  index) // Adjusted to start from 0 to 10
-                          .map<DropdownMenuItem<int>>((int value) {
-                        return DropdownMenuItem<int>(
-                          value: value,
-                          child: Text(value.toString()),
-                        );
-                      }).toList(),
-                    ),
-                  ],
+    return DefaultTabController(
+      length: 2, // Number of tabs
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+          iconTheme: IconThemeData(color: Colors.white),
+          backgroundColor: Colors.lightGreen,
+          title: const Text(
+            "Certificate Fee Payments",
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          ),
+          bottom: const TabBar(
+            labelColor: Colors.white, // Color for selected tab text
+            unselectedLabelColor: Colors.white54,
+            tabs: [
+              Tab(
+                child: Text(
+                  "Certificates",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold, // Make text bold
+                  ),
                 ),
               ),
+              Tab(
+                child: Text(
+                  "Grade Memos",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold, // Make text bold
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+        body: Column(
+          children: [
+            Expanded(
+              child: TabBarView(
+                children: [
+                  Column(
+                    // Wrap the first tab's content in a Column
+                    children: [
+                      certificates.isEmpty
+                          ? const Center(child: CircularProgressIndicator())
+                          : Expanded(
+                              child: ListView.builder(
+                                itemCount: certificates.length,
+                                itemBuilder: (context, index) {
+                                  final certificate = certificates[index];
+                                  final certificateId =
+                                      certificate['certificateId'];
+                                  final certificateName =
+                                      certificate['certificateName'];
+
+                                  return ListTile(
+                                    title: Text(certificateName),
+                                    trailing: DropdownButton<int>(
+                                      value: selectedCopies[certificateId] ?? 0,
+                                      // Default to 0
+                                      onChanged: (value) {
+                                        if (value != null) {
+                                          selectCopies(certificateId, value);
+                                        }
+                                      },
+                                      items: List.generate(11,
+                                              (i) => i) // Generates from 0 to 9
+                                          .map<DropdownMenuItem<int>>(
+                                            (int value) =>
+                                                DropdownMenuItem<int>(
+                                              value: value,
+                                              child: Text(value.toString()),
+                                            ),
+                                          )
+                                          .toList(),
+                                    ),
+                                  );
+                                },
+                              ),
+                            ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 30.0),
+                        child: Container(
+                          width: 220,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.lightGreen),
+                            onPressed: showTotal,
+                            child: Text(
+                              'Show Total',
+                              style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  Duplicates(), // The second tab remains unaffected
+                ],
+              ),
             ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          fetchBottomSheet();
-          // Display selected names, certificateIds, and copies
-          _selectedCopies.forEach((certificateId, copyInfo) {
-            final certificate = _certificates
-                .firstWhere((c) => c['certificateId'] == certificateId);
-            print(
-                '${certificate['certificateName']} (ID: $certificateId) - ${copyInfo.selectedCopies} copies');
-          });
-        },
-        child: Icon(Icons.done),
+          ],
+        ),
       ),
     );
   }
-}
-
-void main() {
-  runApp(MaterialApp(
-    home: CertificateFeePayments(),
-  ));
 }

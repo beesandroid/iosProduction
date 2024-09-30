@@ -28,7 +28,6 @@ class _NewLoginState extends State<NewLogin> {
 
 
 
-
   Future<void> fetchDataFirst() async {
     try {
       final response = await http.post(
@@ -44,10 +43,10 @@ class _NewLoginState extends State<NewLogin> {
         }),
       );
 
-
       if (response.statusCode == 200) {
         final jsonResponse = json.decode(response.body);
-      print(jsonResponse.toString());
+        print(jsonResponse.toString());
+
         // Scenario 1: "User Already registered"
         if (jsonResponse is List &&
             jsonResponse.length == 1 &&
@@ -67,7 +66,7 @@ class _NewLoginState extends State<NewLogin> {
             fontSize: 16.0,
           );
           print(message);
-          return; // Exit function gracefully since this is a valid scenario
+          return;
         }
 
         // Scenario 2: "No data found"
@@ -89,7 +88,7 @@ class _NewLoginState extends State<NewLogin> {
             fontSize: 16.0,
           );
           print(message);
-          return; // Exit function gracefully since this is a valid scenario
+          return;
         }
 
         // Scenario 3: "Message accepted successfully" with OTP
@@ -101,7 +100,6 @@ class _NewLoginState extends State<NewLogin> {
               value.containsKey('status')) {
             if (value['statusCode'] == '200' && value['status'] == true) {
               final otp = value['otp'].toString();
-
 
               // Navigate to OTP validation screen
               Navigator.push(
@@ -116,7 +114,7 @@ class _NewLoginState extends State<NewLogin> {
                   ),
                 ),
               );
-              return; // Exit function gracefully since this is a valid scenario
+              return;
             } else {
               print("Unexpected statusCode or status: ${value['statusCode']}, ${value['status']}");
               throw Exception('Unexpected response from server');
@@ -128,6 +126,22 @@ class _NewLoginState extends State<NewLogin> {
         } else {
           print("Invalid response structure: $jsonResponse");
           throw Exception('Failed to load data from first API');
+        }
+      } else if (response.statusCode == 500) {
+        // Handle server offline scenario
+        final jsonResponse = json.decode(response.body);
+        if (jsonResponse['message'] == "Server offline.") {
+          Fluttertoast.showToast(
+            msg: "The server is currently offline. Please try again later.",
+            toastLength: Toast.LENGTH_LONG,
+            gravity: ToastGravity.BOTTOM,
+            timeInSecForIosWeb: 1,
+            backgroundColor: Colors.redAccent,
+            textColor: Colors.white,
+            fontSize: 16.0,
+          );
+          print("Server offline: ${jsonResponse['details']}");
+          return;
         }
       } else {
         print("Error response: ${response.body}");
@@ -146,7 +160,6 @@ class _NewLoginState extends State<NewLogin> {
       );
     }
   }
-
 
   Future<void> fetchGroupPhoto(String groupCode) async {
     final apiUrl = 'https://mritsexams.com/CoreApi/Android/GetClgLogo';

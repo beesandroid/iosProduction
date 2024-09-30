@@ -208,8 +208,4 @@ class _CustomDrawerState extends State<CustomDrawer> {
       MaterialPageRoute(builder: (context) => SplashScreen()),
     );
   }
-
-
-
-
 }

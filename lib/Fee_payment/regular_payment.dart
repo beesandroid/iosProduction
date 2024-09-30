@@ -120,8 +120,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
     int schoolid = prefs.getInt('schoolId') ?? 00;
     int studId = prefs.getInt('studId') ?? 00;
     final response = await http.post(
-      Uri.parse(
-          'https://mritsexams.com/CoreApi/Android/StudFeeFillDetails'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/StudFeeFillDetails'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
@@ -151,6 +150,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.lightGreen,
+        iconTheme: IconThemeData(color: Colors.white),
         title: const Text(
           'Regular Fee Payments',
           style: TextStyle(
@@ -346,176 +346,178 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
                       }
                     },
                   ),
-                  FutureBuilder<StudFeeFillDetails>(
-                    future: studFeeFillDetailsFuture,
-                    builder: (context, studFeeSnapshot) {
-                      if (studFeeSnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        return const CircularProgressIndicator();
-                      } else if (studFeeSnapshot.hasError) {
-                        return Text('Error: ${studFeeSnapshot.error}');
-                      } else if (studFeeSnapshot.hasData) {
-                        final studFeeDetails = studFeeSnapshot.data!;
-                        int totalFee = (studFeeDetails.studFee ?? 0) +
-                            (studFeeDetails.studFine ?? 0);
-                        return Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Material(
-                            borderRadius: BorderRadius.circular(10),
-                            // elevation: 4, // Remove elevation
-                            // Add border color and width
-                            borderOnForeground: true,
-                            color: Colors.transparent,
-                            // Make material transparent
-                            child: Column(
-                              children: [
-                                if (_showButton)
-                                  Padding(
-                                    padding: const EdgeInsets.all(10),
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              'Exam Month',
-                                              style: TextStyle(
-                                                color: Color(0xFFFF9800),
-                                                fontWeight: FontWeight.bold,
+                  if (_showButton)
+                    FutureBuilder<StudFeeFillDetails>(
+                      future: studFeeFillDetailsFuture,
+                      builder: (context, studFeeSnapshot) {
+                        if (studFeeSnapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const CircularProgressIndicator();
+                        } else if (studFeeSnapshot.hasError) {
+                          return Text('Error: ${studFeeSnapshot.error}');
+                        } else if (studFeeSnapshot.hasData) {
+                          final studFeeDetails = studFeeSnapshot.data!;
+                          int totalFee = (studFeeDetails.studFee ?? 0) +
+                              (studFeeDetails.studFine ?? 0);
+                          return Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Material(
+                              borderRadius: BorderRadius.circular(10),
+                              // elevation: 4, // Remove elevation
+                              // Add border color and width
+                              borderOnForeground: true,
+                              color: Colors.transparent,
+                              // Make material transparent
+                              child: Column(
+                                children: [
+                                  if (_showButton)
+                                    Padding(
+                                      padding: const EdgeInsets.all(10),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Exam Month',
+                                                style: TextStyle(
+                                                  color: Color(0xFFFF9800),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
-                                            Text(
-                                              '${studFeeDetails.regExamMonth}',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
+                                              Text(
+                                                '${studFeeDetails.regExamMonth}',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 8),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              'Student Fee',
-                                              style: TextStyle(
-                                                color: Color(0xFFFF9800),
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            Text(
-                                              '${studFeeDetails.studFee ?? ''}',
-                                              style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 15,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 8),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              'Student Fine',
-                                              style: TextStyle(
-                                                color: Color(0xFFFF9800),
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                            Text(
-                                              '${studFeeDetails.studFine ?? ''}',
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                        Padding(
-                                          padding: const EdgeInsets.all(8.0),
-                                          child: Divider(
-                                            color: Colors.grey,
-                                            thickness: 1,
+                                            ],
                                           ),
-                                        ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              'Total',
-                                              style: TextStyle(
-                                                color: Color(0xFFFF9800),
-                                                fontWeight: FontWeight.bold,
+                                          SizedBox(height: 8),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Student Fee',
+                                                style: TextStyle(
+                                                  color: Color(0xFFFF9800),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
                                               ),
-                                            ),
-                                            Text(
-                                              '$totalFee',
-                                              style: TextStyle(
-                                                fontSize: 15,
-                                                color: Colors.green,
-                                                fontWeight: FontWeight.bold,
+                                              Text(
+                                                '${studFeeDetails.studFee ?? ''}',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 15,
+                                                ),
                                               ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 8),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Student Fine',
+                                                style: TextStyle(
+                                                  color: Color(0xFFFF9800),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                '${studFeeDetails.studFine ?? ''}',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Divider(
+                                              color: Colors.grey,
+                                              thickness: 1,
                                             ),
-                                          ],
-                                        ),
-                                        SizedBox(height: 16),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            if (_showButton)
-                                              ElevatedButton(
-                                                onPressed: () {
-                                                  Fluttertoast.showToast(
-                                                    msg:
-                                                        "Page redirecting to Paytm Payments Page...",
-                                                    toastLength:
-                                                        Toast.LENGTH_SHORT,
-                                                    gravity:
-                                                        ToastGravity.BOTTOM,
-                                                    timeInSecForIosWeb: 1,
+                                          ),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Total',
+                                                style: TextStyle(
+                                                  color: Color(0xFFFF9800),
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                              Text(
+                                                '$totalFee',
+                                                style: TextStyle(
+                                                  fontSize: 15,
+                                                  color: Colors.green,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(height: 16),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            children: [
+                                              if (_showButton)
+                                                ElevatedButton(
+                                                  onPressed: () {
+                                                    Fluttertoast.showToast(
+                                                      msg:
+                                                          "Page redirecting to Paytm Payments Page...",
+                                                      toastLength:
+                                                          Toast.LENGTH_SHORT,
+                                                      gravity:
+                                                          ToastGravity.BOTTOM,
+                                                      timeInSecForIosWeb: 1,
+                                                      backgroundColor:
+                                                          Colors.white,
+                                                      textColor: Colors.black,
+                                                      fontSize: 16.0,
+                                                    );
+                                                    proceedToPayment(
+                                                        studFeeDetails); // Pass studFeeDetails to proceedToPayment
+                                                  },
+                                                  style:
+                                                      ElevatedButton.styleFrom(
                                                     backgroundColor:
-                                                        Colors.white,
-                                                    textColor: Colors.black,
-                                                    fontSize: 16.0,
-                                                  );
-                                                  proceedToPayment(
-                                                      studFeeDetails); // Pass studFeeDetails to proceedToPayment
-                                                },
-                                                style: ElevatedButton.styleFrom(
-                                                  backgroundColor:
-                                                      Colors.lightGreen,
+                                                        Colors.lightGreen,
+                                                  ),
+                                                  child: Text(
+                                                    "Proceed to Payment",
+                                                    style: TextStyle(
+                                                        color: Colors.white),
+                                                  ),
                                                 ),
-                                                child: Text(
-                                                  "Proceed to Payment",
-                                                  style: TextStyle(
-                                                      color: Colors.white),
-                                                ),
-                                              ),
-                                          ],
-                                        ),
-                                        // Add this widget to display transaction result
-                                        SizedBox(height: 16),
-                                      ],
+                                            ],
+                                          ),
+                                          // Add this widget to display transaction result
+                                          SizedBox(height: 16),
+                                        ],
+                                      ),
                                     ),
-                                  ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      } else {
-                        return SizedBox
-                            .shrink(); // Return null if there is no data
-                      }
-                    },
-                  ),
+                          );
+                        } else {
+                          return SizedBox
+                              .shrink(); // Return null if there is no data
+                        }
+                      },
+                    ),
                 ],
               ),
             );
@@ -659,7 +661,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
           "ExamMonth": '${studFeeDetails.regExamMonth ?? ''}',
         }),
       );
- if (response.statusCode == 200) {
+      if (response.statusCode == 200) {
         final Map<String, dynamic> responseData = jsonDecode(response.body);
         if (responseData.containsKey('singleSaveRegularFeeTempDataList')) {
           final Map<String, dynamic> singleSaveRegularFeeTempDataList =
@@ -817,8 +819,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
       int schoolid = prefs.getInt('schoolId') ?? 0;
 
       final response = await http.post(
-        Uri.parse(
-            'https://mritsexams.com/CoreApi/Android/FeeReceiptsReports'),
+        Uri.parse('https://mritsexams.com/CoreApi/Android/FeeReceiptsReports'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:betplus_ios/Fee_payment/Condonation.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -245,9 +246,14 @@ class _FeePaymentsState extends State<FeePayments> {
                             // Add the appropriate navigation logic here
                               break;
                             case "Betterment Fee Payment":
+
                             // Add the appropriate navigation logic here
                               break;
                             case "Condonation Fee Payment":
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => Condonation()),
+                              );
                             // Add the appropriate navigation logic here
                               break;
                             case "Certificates Fee Payment":
