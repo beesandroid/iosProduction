@@ -29,30 +29,38 @@ class _midMarksState extends State<midMarks> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String grpCodeValue = prefs.getString('grpCode') ?? '';
     int schoolId = prefs.getInt('schoolId') ?? 0;
-
     int studId = prefs.getInt('studId') ?? 0;
+
     setState(() {
       isLoading = true;
     });
+
+    // Prepare the request body
+    final requestBody = {
+      "GrpCode": grpCodeValue,
+      "ColCode": "pss",
+      "CollegeId": "0001",
+      "SchoolId": schoolId,
+      "ExamId": "0",
+      "StudId": studId,
+      "Flag": "0"
+    };
+
+    // Print the request body
+    print("Request Body: ${jsonEncode(requestBody)}");
+
     try {
       final response = await http.post(
         Uri.parse('https://mritsexams.com/CoreApi/Android/IntMarksDetails'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({
-          "GrpCode": grpCodeValue,
-          "ColCode": "pss",
-          "CollegeId": "0001",
-          "SchoolId": schoolId,
-          "ExamId": "0",
-          "StudId": studId,
-          "Flag": "0"
-        }),
+        body: jsonEncode(requestBody),
       );
 
       if (response.statusCode == 200) {
         var responseData = jsonDecode(response.body);
+        print(responseData);
         examList = responseData['intMarksDetailsList2'];
 
         setState(() {
@@ -76,6 +84,7 @@ class _midMarksState extends State<midMarks> {
       });
     }
   }
+
 
   Future<void> fetchUpdatedExamDetails(String examId) async {
     setState(() {

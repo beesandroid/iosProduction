@@ -316,8 +316,7 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
   }
 
   Future<void> _fetchFeeReceiptsReport(
-      int receiptId, BuildContext context) async {
-    try {
+      int receiptId, BuildContext context) async {try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String grpCodeValue = prefs.getString('grpCode') ?? '';
       String colCode = prefs.getString('colCode') ?? '';

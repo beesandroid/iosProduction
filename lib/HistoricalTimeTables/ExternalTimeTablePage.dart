@@ -145,6 +145,7 @@ class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
+      print(responseData);
       setState(() {
         monthYears = List<String>.from(
             responseData['examTimeTableMonthYearDropDownList']
@@ -160,43 +161,44 @@ class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
   Future<void> fetchTimetableEntries() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String grpCodeValue = prefs.getString('grpCode') ?? '';
-
     String betCourseId = prefs.getString('betCourseId') ?? '';
-
-    int schoolid = prefs.getInt('schoolId') ?? 00;
-    int studId = prefs.getInt('studId') ?? 00;
-
+    int schoolId = prefs.getInt('schoolId') ?? 0;
+    int studId = prefs.getInt('studId') ?? 0;
     String betBranchcode = prefs.getString('betBranchcode') ?? '';
+
+    // Construct the request body
+    final requestBody = {
+      "GrpCode": grpCodeValue,
+      "ColCode": "pss",
+      "CollegeId": "0001",
+      "SchoolId": schoolId,
+      "ExamType": selectedExamType,
+      "CourseId": betCourseId,
+      "BranchCode": betBranchcode,
+      "Sem": selectedSemester,
+      "MonthYear": selectedMonthYear,
+      "StudId": studId
+    };
+
+    // Print the request body for debugging
+    print('Request Body: ${jsonEncode(requestBody)}');
+
+    // Send the HTTP request
     final response = await http.post(
-      Uri.parse(
-          'https://mritsexams.com/CoreApi/Android/ExternalExamTimeTableDisplay'),
+      Uri.parse('https://mritsexams.com/CoreApi/Android/ExternalExamTimeTableDisplay'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
-      body: jsonEncode({
-        "GrpCode": grpCodeValue,
-        "ColCode": "pss",
-        "CollegeId": "0001",
-        "SchoolId": schoolid,
-        "ExamType": selectedExamType,
-        "CourseId": betCourseId,
-        "BranchCode": betBranchcode,
-        "Sem": selectedSemester,
-        "MonthYear": selectedMonthYear,
-        "StudId": studId
-      }),
+      body: jsonEncode(requestBody),
     );
 
+    // Handle the response
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
+      print(responseData);
       setState(() {
-        timetableEntries = List<Map<String, dynamic>>.from(
-            responseData['externalExamTimeTableDisplayList']);
-        if (timetableEntries.isEmpty) {
-          errorMessage = 'No data available';
-        } else {
-          errorMessage = '';
-        }
+        timetableEntries = List<Map<String, dynamic>>.from(responseData['externalExamTimeTableDisplayList']);
+        errorMessage = timetableEntries.isEmpty ? 'No data available' : '';
       });
     } else {
       setState(() {
@@ -204,6 +206,7 @@ class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
       });
     }
   }
+
 
   // Function to check if all dropdowns are selected
   bool allDropdownsSelected() {

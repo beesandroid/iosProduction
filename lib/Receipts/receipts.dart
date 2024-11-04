@@ -30,7 +30,8 @@ class _ReceiptsPageState extends State<ReceiptsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(backgroundColor: Colors.white,
+    return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.lightGreen,
         title: const Text(
@@ -333,7 +334,7 @@ class _ReceiptsPageState extends State<ReceiptsPage> {
         await pdfFile.writeAsBytes(downloadResponse.bodyBytes);
 
         _launchPDF(context, filePath);
-       } else {
+      } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(

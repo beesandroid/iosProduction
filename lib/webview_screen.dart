@@ -1,31 +1,57 @@
 import 'dart:convert';
-
 import 'package:betplus_ios/views/splashscreen.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'dart:io';
 
 class WebViewScreen extends StatefulWidget {
   final String bdorderid;
   final String mercid;
   final String rdata;
 
-  WebViewScreen({required this.bdorderid, required this.mercid, required this.rdata, required String initialUrl});
+  WebViewScreen({
+    required this.bdorderid,
+    required this.mercid,
+    required this.rdata, required String initialUrl,
+  });
 
   @override
   _WebViewScreenState createState() => _WebViewScreenState();
 }
 
 class _WebViewScreenState extends State<WebViewScreen> {
-  late WebViewController _webViewController;
+  late final WebViewController _webViewController;
   bool _loading = true;
   late ProgressDialog _progressDialog;
 
   @override
   void initState() {
     super.initState();
-    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+
+    _webViewController = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onPageFinished: (String url) {
+            setState(() {
+              _loading = false;
+            });
+            _progressDialog.dismiss();
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            if (handleDeepLink(request.url)) {
+              return NavigationDecision.prevent;
+            }
+            return NavigationDecision.navigate;
+          },
+          onWebResourceError: (WebResourceError error) {
+            print("WebView error: ${error.description}");
+            _progressDialog.dismiss();
+          },
+        ),
+      );
+
+    loadBillDeskPaymentPage();
   }
 
   @override
@@ -38,6 +64,12 @@ class _WebViewScreenState extends State<WebViewScreen> {
   }
 
   @override
+  void dispose() {
+    _progressDialog.dismiss();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -47,10 +79,6 @@ class _WebViewScreenState extends State<WebViewScreen> {
       body: WillPopScope(
         onWillPop: () async {
           if (await _webViewController.canGoBack()) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => SplashScreen()),
-            );
             _webViewController.goBack();
             return false;
           } else {
@@ -63,30 +91,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
         },
         child: Stack(
           children: [
-            WebView(
-              initialUrl: '',
-              onWebViewCreated: (controller) {
-                _webViewController = controller;
-                loadBillDeskPaymentPage();
-              },
-              javascriptMode: JavascriptMode.unrestricted,
-              onPageFinished: (String url) {
-                setState(() {
-                  _loading = false;
-                });
-                _progressDialog.dismiss();
-              },
-              onWebResourceError: (error) {
-                print("WebView error: ${error.description}");
-                _progressDialog.dismiss();
-              },
-              navigationDelegate: (NavigationRequest request) {
-                if (handleDeepLink(request.url)) {
-                  return NavigationDecision.prevent;
-                }
-                return NavigationDecision.navigate;
-              },
-            ),
+            WebViewWidget(controller: _webViewController),
             if (_loading)
               Center(
                 child: CircularProgressIndicator(),
@@ -148,24 +153,23 @@ class _WebViewScreenState extends State<WebViewScreen> {
       </html>
     """;
 
-    _webViewController.loadUrl(Uri.dataFromString(
-      htmlContent,
-      mimeType: 'text/html',
-      encoding: Encoding.getByName('utf-8'),
-    ).toString());
+    _webViewController.loadHtmlString(htmlContent);
   }
 
   bool handleDeepLink(String url) {
     Uri uri = Uri.parse(url);
     if (url.startsWith("upi://")) {
       try {
-        launch(url);
+        launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
         return true;
-      } on Exception catch (e) {
+      } catch (e) {
         print("Can't resolve intent: ${e.toString()}");
       }
     } else if (uri.host == "www.beessoftware.com" && uri.path.startsWith("/v1/")) {
-      Navigator.push(context, MaterialPageRoute(builder: (context) => SplashScreen()));
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SplashScreen()),
+      );
       return true;
     }
     return false;
@@ -174,7 +178,7 @@ class _WebViewScreenState extends State<WebViewScreen> {
 
 class ProgressDialog {
   final BuildContext context;
-  bool _isShowing = false; // Initialize _isShowing to false
+  bool _isShowing = false;
 
   ProgressDialog({required this.context});
 
@@ -204,7 +208,7 @@ class ProgressDialog {
   void dismiss() {
     if (_isShowing) {
       _isShowing = false;
-      Navigator.of(context).pop();
+      Navigator.of(context, rootNavigator: true).pop();
     }
   }
 

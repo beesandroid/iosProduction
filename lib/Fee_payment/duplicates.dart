@@ -1,8 +1,17 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 import 'package:paytm_allinonesdk/paytm_allinonesdk.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/intl.dart';
+import 'package:flutter_pdfview/flutter_pdfview.dart';
+
+import 'package:open_file/open_file.dart'; // Add this import
+
+import '../views/MainPage.dart';
 
 class Duplicates extends StatefulWidget {
   const Duplicates({super.key});
@@ -35,12 +44,14 @@ class _DuplicatesState extends State<Duplicates> {
     String grpCodeValue = prefs.getString('grpCode') ?? '';
     int schoolId = prefs.getInt('schoolId') ?? 0;
     int studId = prefs.getInt('studId') ?? 0;
+    String colCode = prefs.getString('colCode') ?? '';
+    String collegeId = prefs.getString('collegeId') ?? '';
     const url =
         'https://mritsexams.com/CoreAPI/Flutter/CertificateDropDownForFlutter';
     final requestBody = {
       "GrpCode": grpCodeValue,
-      "ColCode": "PSS",
-      "CollegeId": "0001",
+      "ColCode": colCode,
+      "CollegeId": collegeId,
       "SchoolId": schoolId,
       "Flag": 0,
       "FYearId": 0,
@@ -71,7 +82,7 @@ class _DuplicatesState extends State<Duplicates> {
       "Address": "",
       "TransDescription": "",
       "Success": 0,
-      "NewTxnIdMain": 0,
+      "NewTxnIdMain": "0",
       "AcyearId": 0,
       "StudentOnlineCertificatesVariable": [
         {
@@ -115,12 +126,22 @@ class _DuplicatesState extends State<Duplicates> {
     }
   }
 
-  Future<void> showTotal(BuildContext context) async {
+  String generateRandomText(int length) {
+    const _chars =
+        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    final _random = Random();
+    return String.fromCharCodes(Iterable.generate(
+        length, (_) => _chars.codeUnitAt(_random.nextInt(_chars.length))));
+  }
+
+  Future<void> showTotal(String captcha, String newTxnId) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String admnNo = prefs.getString('admnNo') ?? '';
     String grpCodeValue = prefs.getString('grpCode') ?? '';
     int schoolId = prefs.getInt('schoolId') ?? 0;
     int studId = prefs.getInt('studId') ?? 0;
+    String colCode = prefs.getString('colCode') ?? '';
+    String collegeId = prefs.getString('collegeId') ?? '';
 
     final selectedCertificates = selectedCopies.entries
         .where((entry) => entry.value > 0)
@@ -146,14 +167,14 @@ class _DuplicatesState extends State<Duplicates> {
 
     final requestBody = {
       "GrpCode": grpCodeValue,
-      "ColCode": "PSS",
-      "CollegeId": "0001",
+      "ColCode": colCode,
+      "CollegeId": collegeId,
       "SchoolId": schoolId,
       "Flag": 1,
       "FYearId": 0,
       "CertificateIds": "",
       "Copies": "",
-      "CaptchaImg": "",
+      "CaptchaImg": captcha,
       "PaymentDate": "",
       "StudId": studId,
       "ReValFee": 0,
@@ -179,7 +200,7 @@ class _DuplicatesState extends State<Duplicates> {
       "Address": "",
       "TransDescription": "",
       "Success": 0,
-      "NewTxnIdMain": 0,
+      "NewTxnIdMain": "0",
       "AcyearId": 0,
       "StudentOnlineCertificatesVariable": selectedCertificates,
     };
@@ -220,6 +241,8 @@ class _DuplicatesState extends State<Duplicates> {
             actions: [
               TextButton(
                 onPressed: () {
+                  final atomTransId = data['cerificatesDropDownForFlutterList']
+                      [0]['atomTransId'];
                   // Extract Paytm details for transaction
                   final paytmDetails = data['paytmDetailsList']?[0];
                   if (paytmDetails != null) {
@@ -235,7 +258,7 @@ class _DuplicatesState extends State<Duplicates> {
 
                     // Proceed with Paytm payment
                     initiatePaytmTransaction(txnToken, productId, grandTotal,
-                        ordeR_ID, callbacK_URL);
+                        ordeR_ID, callbacK_URL, captcha, atomTransId,newTxnId);
                   } else {
                     print("No Paytm details found");
                     Navigator.of(context)
@@ -260,52 +283,319 @@ class _DuplicatesState extends State<Duplicates> {
     }
   }
 
+  Future<void> Tempsave() async {
+    String paymentDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String admnNo = prefs.getString('admnNo') ?? '';
+    String grpCodeValue = prefs.getString('grpCode') ?? '';
+    int schoolId = prefs.getInt('schoolId') ?? 0;
+    int studId = prefs.getInt('studId') ?? 0;
+    String colCode = prefs.getString('colCode') ?? '';
+    String collegeId = prefs.getString('collegeId') ?? '';
+    var captcha = generateRandomText(6).toString();
+    final selectedCertificates = selectedCopies.entries
+        .where((entry) => entry.value > 0)
+        .map((entry) => {
+              "CertificateId": entry.key,
+              "Copies": entry.value,
+              "ExamType": selectedExamType[entry.key],
+              "Sem": selectedSem[entry.key],
+              "MonthYear": selectedMonthYear[entry.key],
+              "CopyType": 0,
+            })
+        .toList();
+
+    if (selectedCertificates.isEmpty) {
+      showDialog(
+          context: context,
+          builder: (context) => const AlertDialog(
+                title: Text("No Selection"),
+                content: Text("Please select at least one certificate."),
+              ));
+      return;
+    }
+    final requestBody = {
+      "GrpCode": grpCodeValue,
+      "ColCode": colCode,
+      "CollegeId": collegeId,
+      "SchoolId": schoolId,
+      "Flag": 4,
+      "FYearId": 0,
+      "CertificateIds": "",
+      "Copies": "",
+      "CaptchaImg": captcha,
+      "PaymentDate": paymentDate,
+      "StudId": studId,
+      "ReValFee": 0,
+      "AdmnNo": admnNo,
+      "ReCountFee": 0,
+      "RevalFine": 0,
+      "Sem": "",
+      "ExamMonth": "",
+      "ExamType": "",
+      "AtomTransId": "",
+      "MerchantTransId": "",
+      "TransAmt": "0.0",
+      "TransSurChargeAmt": "0.0",
+      "TransDate": "",
+      "BankTransId": "",
+      "TransStatus": "",
+      "BankName": "",
+      "PaymentDonethrough": "",
+      "CardNumber": "",
+      "CardHolderName": "",
+      "Email": "",
+      "MobileNo": "",
+      "Address": "",
+      "TransDescription": "",
+      "Success": 0,
+      "NewTxnIdMain": "0",
+      "AcyearId": 0,
+      "StudentOnlineCertificatesVariable": selectedCertificates,
+    };
+    print("zzz" + requestBody.toString());
+
+    final url =
+        'https://mritsexams.com/CoreAPI/Flutter/CertificateDropDownForFlutter';
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(requestBody),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print(data);
+      print("1234" + data.toString());
+      if (data['tempSavingList'] != null && data['tempSavingList'].length > 1) {
+        String newTxnId = data['tempSavingList'][1]['newTxnId'].toString();
+        print("NewTxnId: " + newTxnId);
+
+        // Pass newTxnId and captcha to showTotal
+        showTotal(captcha, newTxnId);
+      } else {
+        print("tempSavingList is null or doesn't have enough entries.");
+      }
+
+
+
+    }
+  }
+
   Future<void> initiatePaytmTransaction(
-      String txnToken,
-      String productId,
-      int amount,
-      String orderId, // Fixed capitalization
-      String callbackUrl // Fixed capitalization
-      ) async {
+      txnToken, productId, grandTotal,
+      ordeR_ID, callbacK_URL, captcha, atomTransId,newTxnId, // Use newTxnId instead of atomTransId
+  ) async {
     try {
-      //   mid,
-      // orderId,
-      // amount.toString(),
-      // responseData!['paytmResponseCondonation']['body']['txnToken'],
-      // callbackUrl,
-      // isStaging,
-      // restrictAppInvoke,
       print("Initiating Paytm transaction with:");
       print("Product ID: $productId");
       print("Transaction Token: $txnToken");
-      print("Amount: $amount");
-      print("Order ID: $orderId");
-      print("Callback URL: $callbackUrl");
+      print("Amount: $grandTotal");
+      print("Order ID: $ordeR_ID");
+      print("Callback URL: $callbacK_URL");
 
-      var response = AllInOneSdk.startTransaction(
-          productId,
-          orderId,
-          amount.toString(),
-          // Amount
-          txnToken,
-          // Order ID
-          callbackUrl,
-          // Callback URL (If available)
-          false,
-          // Is Staging (for testing set true, for production set false)
-          false // Enable 4G optimization
-          );
+      var response = AllInOneSdk.startTransaction(productId, ordeR_ID,
+          grandTotal.toString(), txnToken, callbacK_URL, false, false);
 
       response.then((value) {
         print("Transaction Successful: $value");
-        // Handle the response from Paytm after transaction completes.
-        // You can navigate the user to a success page or show a confirmation dialog.
+        String txnId = value?['TXNID'];
+        String txnAmount = value?['TXNAMOUNT'];
+        String paymentMode = value?['PAYMENTMODE'];
+        String bankTxnId = value?['BANKTXNID'];
+        String txnDate = value?['TXNDATE'];
+
+        // Call the API again with Flag = 5
+        callApiWithFlag5(txnId, ordeR_ID, txnAmount, paymentMode, bankTxnId,
+            txnDate, captcha, newTxnId, productId, atomTransId);
       }).catchError((onError) {
         print("Transaction failed: $onError");
-        // Handle transaction failure here
       });
     } catch (e) {
       print("Error in initiating Paytm transaction: $e");
+    }
+  }
+
+  Future<void> callApiWithFlag5(
+      String txnId,
+      String orderId,
+      String txnAmount,
+      String paymentMode,
+      String bankTxnId,
+      String txnDate,
+      String captcha,
+
+      String productId,
+      newTxnId, atomTransId) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String admnNo = prefs.getString('admnNo') ?? '';
+    String grpCodeValue = prefs.getString('grpCode') ?? '';
+    int schoolId = prefs.getInt('schoolId') ?? 0;
+    int studId = prefs.getInt('studId') ?? 0;
+    int fYearId = prefs.getInt('fYearId') ?? 0;
+    String betSem = prefs.getString('betSem') ?? '';
+    String colCode = prefs.getString('colCode') ?? '';
+    String collegeId = prefs.getString('collegeId') ?? '';
+
+    final selectedCertificates = selectedCopies.entries
+        .where((entry) => entry.value > 0)
+        .map((entry) => {
+              "CertificateId": entry.key,
+              "Copies": entry.value,
+              "ExamType": selectedExamType[entry.key],
+              "Sem": selectedSem[entry.key],
+              "MonthYear": selectedMonthYear[entry.key],
+              "CopyType": 0,
+            })
+        .toList();
+
+    final requestBody = {
+      "GrpCode": grpCodeValue,
+      "ColCode": colCode,
+      "CollegeId": collegeId,
+      "SchoolId": schoolId,
+      "Flag": 5,
+      "FYearId": fYearId,
+      "CertificateIds": "",
+      "Copies": "",
+      "CaptchaImg": captcha,
+      "PaymentDate": txnDate,
+      "StudId": studId,
+      "ReValFee": 0,
+      "AdmnNo": admnNo,
+      "ReCountFee": 0,
+      "RevalFine": 0,
+      "Sem": betSem,
+      "ExamMonth": "",
+      "ExamType": "",
+      "AtomTransId": atomTransId.toString(),
+      "MerchantTransId": productId,
+      "TransAmt": txnAmount,
+      "TransSurChargeAmt": "0.0",
+      "TransDate": txnDate,
+      "BankTransId": bankTxnId,
+      "TransStatus": "TXN_SUCCESS",
+      "BankName": paymentMode,
+      "PaymentDonethrough": "",
+      "CardNumber": "",
+      "CardHolderName": "",
+      "Email": "",
+      "MobileNo": "",
+      "Address": "",
+      "TransDescription": "Certificate Payment",
+      "Success": 0,
+      "NewTxnIdMain": newTxnId,
+      "AcyearId": 0,
+      "StudentOnlineCertificatesVariable": selectedCertificates,
+    };
+    print(requestBody);
+
+
+      final url =
+          'https://mritsexams.com/CoreAPI/Flutter/CertificateDropDownForFlutter';
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode(requestBody),
+      );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      final responseData = jsonDecode(response.body);
+      print("API called successfully with Flag 5");
+
+      // Check if tempSavingList exists and is not empty
+      if (responseData.containsKey('tempSavingList') &&
+          responseData['tempSavingList'] is List &&
+          responseData['tempSavingList'].isNotEmpty) {
+
+        final tempSavingData = responseData['tempSavingList'][0]; // Get the first item
+
+        if (tempSavingData.containsKey('recId')) {
+          int receiptId = tempSavingData['recId']; // Extract recId
+          print('Receipt ID: $receiptId');
+
+          // Call _fetchFeeReceiptsReport with the extracted recId
+          await _fetchFeeReceiptsReport(receiptId, context);
+        } else {
+          print('recId key not found in tempSavingData');
+          throw Exception('recId key not found in tempSavingData');
+        }
+      } else {
+        print('tempSavingList is empty or does not exist');
+      }
+    } else {
+      print("Failed to call API with Flag 5. Status code: ${response.statusCode}");
+      print(response.body);
+    }
+  }
+  Future<void> _fetchFeeReceiptsReport(int receiptId, BuildContext context) async {
+    try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String grpCodeValue = prefs.getString('grpCode') ?? '';
+      String colCode = prefs.getString('colCode') ?? '';
+      int schoolId = prefs.getInt('schoolId') ?? 0;
+
+      // Create the request body as a Map
+      final requestBody = {
+        "GrpCode": grpCodeValue,
+        "CollegeId": "0001",
+        "ColCode": "PSS",
+        "SchoolId": schoolId,
+        "RecId": receiptId,
+
+        "Words": "rupees Only",
+        "CertifcateId":0
+      };
+
+      // Print the request body before sending it
+      print('Request Body: ${jsonEncode(requestBody)}');
+
+      final response = await http.post(
+        Uri.parse('https://mritsexams.com/CoreApi/Android/TranscriptReports'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200) {
+        print('Response body: ${response.body}');
+
+        final fileName = 'preview_receipt.pdf';
+        Directory tempDir = await getTemporaryDirectory();
+        String filePath = '${tempDir.path}/$fileName';
+        File pdfFile = File(filePath);
+        await pdfFile.writeAsBytes(response.bodyBytes);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('PDF downloaded successfully.')),
+        );
+
+        // Launch the PDF
+        _launchPDF(context, filePath);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to download PDF. Status code: ${response.statusCode}'),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: $e')),
+      );
+    }
+  }
+
+// Method to launch PDF using open_file package
+  void _launchPDF(BuildContext context, String filePath) async {
+    final result = await OpenFile.open(filePath);
+
+    if (result.type == ResultType.error) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error opening PDF: ${result.message}')),
+      );
     }
   }
 
@@ -315,14 +605,16 @@ class _DuplicatesState extends State<Duplicates> {
     String grpCodeValue = prefs.getString('grpCode') ?? '';
     int schoolId = prefs.getInt('schoolId') ?? 0;
     int studId = prefs.getInt('studId') ?? 0;
+    String colCode = prefs.getString('colCode') ?? '';
+    String collegeId = prefs.getString('collegeId') ?? '';
 
     setState(() {
       selectedCopies[certificateId] = copies;
     });
     final requestBody = {
       "GrpCode": grpCodeValue,
-      "ColCode": "PSS",
-      "CollegeId": "0001",
+      "ColCode": colCode,
+      "CollegeId": collegeId,
       "SchoolId": schoolId,
       "Flag": 3,
       "FYearId": 0,
@@ -353,7 +645,7 @@ class _DuplicatesState extends State<Duplicates> {
       "Address": "",
       "TransDescription": "",
       "Success": 0,
-      "NewTxnIdMain": 0,
+      "NewTxnIdMain": "0",
       "AcyearId": 0,
       "StudentOnlineCertificatesVariable": [
         {
@@ -400,15 +692,16 @@ class _DuplicatesState extends State<Duplicates> {
     String grpCodeValue = prefs.getString('grpCode') ?? '';
     int schoolId = prefs.getInt('schoolId') ?? 0;
     int studId = prefs.getInt('studId') ?? 0;
-
+    String colCode = prefs.getString('colCode') ?? '';
+    String collegeId = prefs.getString('collegeId') ?? '';
     final selectedExamTypeValue = selectedExamType[certificateId] ?? '';
     final selectedSemValue = selectedSem[certificateId] ?? '';
 
     if (selectedExamTypeValue.isNotEmpty && selectedSemValue.isNotEmpty) {
       final requestBody = {
         "GrpCode": grpCodeValue,
-        "ColCode": "PSS",
-        "CollegeId": "0001",
+        "ColCode": colCode,
+        "CollegeId": collegeId,
         "SchoolId": schoolId,
         "Studid": studId.toString(),
         "Sem": selectedSemValue,
@@ -471,11 +764,13 @@ class _DuplicatesState extends State<Duplicates> {
                               value: selectedCopies[certificateId] ?? 0,
                               onChanged: (value) {
                                 if (value != null) {
-                                  selectCopies(certificateId, value);
+                                  setState(() {
+                                    selectCopies(certificateId, value);
+                                  });
                                 }
                               },
                               items: List.generate(
-                                      11, (i) => i) // Generates from 0 to 9
+                                      11, (i) => i) // Generates from 0 to 10
                                   .map<DropdownMenuItem<int>>(
                                     (int value) => DropdownMenuItem<int>(
                                       value: value,
@@ -486,7 +781,7 @@ class _DuplicatesState extends State<Duplicates> {
                             ),
                           ),
 
-                          // Dropdown for semList if available
+                          // Dropdown for examType if available
                           if (examTypeList[certificateId] != null)
                             DropdownButton<String>(
                               value: selectedExamType[certificateId],
@@ -507,7 +802,7 @@ class _DuplicatesState extends State<Duplicates> {
                                   .toList(),
                             ),
 
-                          // Dropdown for semList
+                          // Dropdown for semester if available
                           if (semList[certificateId] != null)
                             DropdownButton<String>(
                               value: selectedSem[certificateId],
@@ -527,8 +822,6 @@ class _DuplicatesState extends State<Duplicates> {
                                   )
                                   .toList(),
                             ),
-
-                          // Dropdown for monthYearList
                           if (monthYearList[certificateId] != null)
                             DropdownButton<String>(
                               value: selectedMonthYear[certificateId],
@@ -558,14 +851,19 @@ class _DuplicatesState extends State<Duplicates> {
                     width: 220,
                     child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.lightGreen),
-                      onPressed: () async {
-                        await showTotal(context);
-                      },
+                        backgroundColor: Colors.lightGreen,
+                      ),
+                      onPressed: areAllSelectionsValid()
+                          ? () async {
+                              await Tempsave();
+                            }
+                          : null, // Disable the button if selections are incomplete
                       child: const Text(
                         'Show Total',
                         style: TextStyle(
-                            color: Colors.white, fontWeight: FontWeight.bold),
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
                   ),
@@ -573,5 +871,18 @@ class _DuplicatesState extends State<Duplicates> {
               ],
             ),
     );
+  }
+
+  bool areAllSelectionsValid() {
+    for (var certificate in certificates) {
+      final certificateId = certificate['certificateId'];
+      if (examTypeList[certificateId] != null &&
+          (selectedExamType[certificateId] == null ||
+              selectedSem[certificateId] == null ||
+              selectedMonthYear[certificateId] == null)) {
+        return false;
+      }
+    }
+    return true;
   }
 }

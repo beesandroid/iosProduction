@@ -40,6 +40,7 @@ class _OverallPerformanceState extends State<OverallPerformance> {
       "SchoolId": schoolId,
       "StudId": studId
     };
+    print(requestPayload);
 
     final response = await http.post(
       Uri.parse(url),
@@ -71,19 +72,25 @@ class _OverallPerformanceState extends State<OverallPerformance> {
         isLoading = true;
       });
 
+      // Create the request body
+      Map<String, dynamic> requestBody = {
+        "GrpCode": grpCodeValue,
+        "ColCode": "pss",
+        "CollegeId": "0001",
+        "SchoolId": schoolId,
+        "StudId": studId,
+        "Semester": semester
+      };
+
+      // Print the request body
+      print('Request body: ${jsonEncode(requestBody)}');
+
       final response = await http.post(
         Uri.parse('https://mritsexams.com/CoreApi/Android/OverAllMarksSemWise'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({
-          "GrpCode": grpCodeValue,
-          "ColCode": "pss",
-          "CollegeId": "0001",
-          "SchoolId": schoolId,
-          "StudId": studId,
-          "Semester": semester
-        }),
+        body: jsonEncode(requestBody),
       );
 
       if (response.statusCode == 200) {
@@ -93,7 +100,7 @@ class _OverallPerformanceState extends State<OverallPerformance> {
           isLoading = false;
         });
       } else {
-        throw Exception('Failed to load final internal marks');
+        throw Exception('Failed to load final internal marks${jsonEncode(requestBody)}');
       }
     } catch (error) {
       print('Error fetching final internal marks: $error');

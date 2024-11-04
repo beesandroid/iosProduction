@@ -60,6 +60,7 @@ class _RegularFeePaymentState extends State<RegularFeePayment> {
       }),
     );
 
+
     if (response.statusCode == 200) {
       final List<dynamic> feeDetailsList =
           jsonDecode(response.body)['feeDetialsList'];

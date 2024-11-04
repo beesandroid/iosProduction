@@ -1,4 +1,7 @@
 allprojects {
+    ext {
+        kotlin_version = '1.7.10'  // Downgrade Kotlin version
+    }
     repositories {
         google()
         mavenCentral()

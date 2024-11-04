@@ -931,16 +931,10 @@ class _ReevaluationState extends State<Reevaluation> {
   Future<void> fetchSubjects(String semester, String examType) async {
        SharedPreferences prefs = await SharedPreferences.getInstance();
     String grpCodeValue = prefs.getString('grpCode') ?? '';
-    String colCode = prefs.getString('colCode') ?? '';
-    String userName = prefs.getString('userName') ?? '';
-    String email = prefs.getString('email') ?? '';
-    String betStudMobile = prefs.getString('betStudMobile') ?? '';
+
     int schoolid = prefs.getInt('schoolId') ?? 00;
     int studId = prefs.getInt('studId') ?? 00;
-    int fYearId = prefs.getInt('fYearId') ?? 00;
-    int acYearId = prefs.getInt('acYearId') ?? 00;
-    int studUserId = prefs.getInt('studUserId') ?? 00;
-    String betCourseId = prefs.getString('betCourseId') ?? '';
+
 
     // Fetch monthYear value
     final monthYear = await showmonth(semester, examType);
@@ -977,7 +971,7 @@ class _ReevaluationState extends State<Reevaluation> {
         setState(() {
           _subjects =
               List<Map<String, dynamic>>.from(subjectDetailsList.map((item) {
-            item['isChecked'] = false; // Initialize with unchecked state
+            item['isChecked'] = false;
             return item;
           }));
         });
@@ -1441,15 +1435,8 @@ class _ReevaluationState extends State<Reevaluation> {
   Future<void> validate(String semester, String examType) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String grpCodeValue = prefs.getString('grpCode') ?? '';
-    String colCode = prefs.getString('colCode') ?? '';
-    String userName = prefs.getString('userName') ?? '';
-    String email = prefs.getString('email') ?? '';
-    String betStudMobile = prefs.getString('betStudMobile') ?? '';
     int schoolid = prefs.getInt('schoolId') ?? 00;
     int studId = prefs.getInt('studId') ?? 00;
-    int fYearId = prefs.getInt('fYearId') ?? 00;
-    int acYearId = prefs.getInt('acYearId') ?? 00;
-    int studUserId = prefs.getInt('studUserId') ?? 00;
     String betCourseId = prefs.getString('betCourseId') ?? '';
     final requestBody = {
       "GrpCode": grpCodeValue,
