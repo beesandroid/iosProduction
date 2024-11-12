@@ -206,7 +206,7 @@ class _student_profileState extends State<student_profile> {
                         ),
                         Text(admissionDate ?? ''),
                         const Text(
-                          "batch",
+                          "Batch",
                           style: TextStyle(
                               color: Color(0xFFFF9800),
                               fontWeight: FontWeight.bold,

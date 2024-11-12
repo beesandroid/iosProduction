@@ -19,32 +19,29 @@ import 'onBoarding_screens/onboardingscreen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
+    name: 'BETPlus',
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
-
-
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
   bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
 
   runApp(
     ChangeNotifierProvider(
-      create: (_) => UserProvider(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        initialRoute: isLoggedIn ? '/profile' : '/splash',
-        routes: {
-          '/splash': (context) => SplashScreen(),
-          '/profile': (context) => Profile(),
-          '/forgot-password': (context) => ForgotPasswordScreen(),
-          '/new-login': (context) => NewLogin(),
-          '/onboarding': (context) => OnboardingScreen(),
-          '/notification': (context) => notification_screen(),
-          // Add other routes here
-        },
-      )
-    ),
+        create: (_) => UserProvider(),
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          initialRoute: isLoggedIn ? '/profile' : '/splash',
+          routes: {
+            '/splash': (context) => SplashScreen(),
+            '/profile': (context) => Profile(),
+            '/forgot-password': (context) => ForgotPasswordScreen(),
+            '/new-login': (context) => NewLogin(),
+            '/onboarding': (context) => OnboardingScreen(),
+            '/notification': (context) => notification_screen(),
+            // Add other routes here
+          },
+        )),
   );
 }
 
@@ -149,7 +146,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     });
   }
 
-  Future<void> login(BuildContext context, String grpCode, String userName, String password) async {
+  Future<void> login(BuildContext context, String grpCode, String userName,
+      String password) async {
     if (grpCode.isEmpty || userName.isEmpty || password.isEmpty) {
       showToast('Please enter all fields', context: context);
       return;
@@ -158,7 +156,6 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     final payload = jsonEncode({
       "GrpCode": grpCode,
       "ColCode": "PSS",
-
       "UserName": userName,
       "Password": password,
     });
@@ -181,7 +178,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
         // Check if registration is not done
         if (responseBody['message'] != null &&
-            responseBody['message'] == "Registration is not done. Go to Signup") {
+            responseBody['message'] ==
+                "Registration is not done. Go to Signup") {
           showToast(responseBody['message'], context: context);
           return;
         }
@@ -640,10 +638,8 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
     bool rememberCredentials = prefs.getBool('isChecked') ?? false;
 
     if (isLoggedIn && rememberCredentials) {
-      // If both are true, directly navigate to Profile
       return true;
     } else {
-      // Otherwise, show SplashScreen
       return false;
     }
   }

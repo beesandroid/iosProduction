@@ -2,6 +2,7 @@
         id "com.android.application"
         // START: FlutterFire Configuration
         id 'com.google.gms.google-services'
+
         // END: FlutterFire Configuration
         id "kotlin-android"
         // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
@@ -18,12 +19,12 @@
 
     def flutterVersionCode = localProperties.getProperty("flutter.versionCode")
     if (flutterVersionCode == null) {
-        flutterVersionCode = "39"
+        flutterVersionCode = "41"
     }
 
     def flutterVersionName = localProperties.getProperty("flutter.versionName")
     if (flutterVersionName == null) {
-        flutterVersionName = "0.39.0"
+        flutterVersionName = "0.41.0"
     }
     def keystoreProperties = new Properties()
     def keystorePropertiesFile = rootProject.file('key.properties')

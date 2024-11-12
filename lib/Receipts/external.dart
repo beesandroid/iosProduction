@@ -159,7 +159,7 @@ class _ExternalViewState extends State<ExternalView> {
         "CourseId": betCourseId.toString(),
         "Sem": _selectedSemester!,
         "ExamType": _selectedExamType!,
-        "StudId": "593"
+        "StudId": betStudUserId.toString()
       }),
     );
 

@@ -7,17 +7,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../views/PROVIDER.dart';
 import '../views/betprovider.dart';
 
-class midMarks extends StatefulWidget {
+class MidMarks extends StatefulWidget {
+
   @override
-  _midMarksState createState() => _midMarksState();
+  _MidMarksState createState() => _MidMarksState();
 }
 
-class _midMarksState extends State<midMarks> {
+class _MidMarksState extends State<MidMarks> {
   String? selectedExamName;
   bool isLoading = false;
   String errorMessage = '';
   List<dynamic> examList = [];
-  Map<String, dynamic>? intMarksDetailsList1Data;
+  List<dynamic>? midExamResultsDisplayListData;
 
   @override
   void initState() {
@@ -35,7 +36,6 @@ class _midMarksState extends State<midMarks> {
       isLoading = true;
     });
 
-    // Prepare the request body
     final requestBody = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",
@@ -46,7 +46,6 @@ class _midMarksState extends State<midMarks> {
       "Flag": "0"
     };
 
-    // Print the request body
     print("Request Body: ${jsonEncode(requestBody)}");
 
     try {
@@ -60,7 +59,8 @@ class _midMarksState extends State<midMarks> {
 
       if (response.statusCode == 200) {
         var responseData = jsonDecode(response.body);
-        print(responseData);
+        print("Exam List Response Data: ${responseData}");
+
         examList = responseData['intMarksDetailsList2'];
 
         setState(() {
@@ -85,51 +85,64 @@ class _midMarksState extends State<midMarks> {
     }
   }
 
-
   Future<void> fetchUpdatedExamDetails(String examId) async {
     setState(() {
       isLoading = true;
       errorMessage = '';
-      intMarksDetailsList1Data = null;
+      midExamResultsDisplayListData = null;
     });
     try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       String grpCodeValue = prefs.getString('grpCode') ?? '';
       int schoolId = prefs.getInt('schoolId') ?? 0;
-
       int studId = prefs.getInt('studId') ?? 0;
+      String betSem = prefs.getString('betSem') ?? '';
+
+      final requestBody = {
+        "GrpCode": grpCodeValue,
+        "ColCode": "pss",
+        "CollegeId": "0001",
+        "SchoolId": schoolId,
+        "ExamId": examId,
+        "StudId": studId,
+        "Flag": "1",
+        "Semester": betSem
+      };
+
+      print("Request Body: ${jsonEncode(requestBody)}");
+
       final response = await http.post(
-        Uri.parse('https://mritsexams.com/CoreApi/Android/IntMarksDetails'),
+        Uri.parse(
+            'https://mritsexams.com/CoreAPI/Android/MidExamResultsDisplay'),
         headers: <String, String>{
           'Content-Type': 'application/json; charset=UTF-8',
         },
-        body: jsonEncode({
-          "GrpCode": grpCodeValue,
-          "ColCode": "pss",
-          "CollegeId": "0001",
-          "SchoolId": schoolId,
-          "ExamId": examId,
-          "StudId":studId,
-          "Flag": "1"
-        }),
+        body: jsonEncode(requestBody),
       );
 
-      if (response.statusCode == 200) {
-        var responseData = jsonDecode(response.body);
+      final responseData = jsonDecode(response.body);
+      print('API Response Data: $responseData');
 
-        if (responseData['intMarksDetailsList1'] != null && responseData['intMarksDetailsList1'].isNotEmpty) {
-          setState(() {
-            intMarksDetailsList1Data = responseData['intMarksDetailsList1'][0];
-          });
-        } else {
-          setState(() {
-            intMarksDetailsList1Data = null;
-            errorMessage = 'No data available';
-          });
-        }
+      // Adjust the key based on the actual response
+      List<dynamic>? dataList;
+      if (responseData['midExamResultsDisplayList'] != null) {
+        dataList = responseData['midExamResultsDisplayList'];
+      } else if (responseData['intMarksDetailsList1'] != null) {
+        dataList = responseData['intMarksDetailsList1'];
+      } else if (responseData['marksList'] != null) {
+        dataList = responseData['marksList'];
+      } else {
+        dataList = null;
+      }
+
+      if (dataList != null && dataList.isNotEmpty) {
+        setState(() {
+          midExamResultsDisplayListData = dataList;
+        });
       } else {
         setState(() {
-          errorMessage = 'Failed to load updated exam details';
+          midExamResultsDisplayListData = null;
+          errorMessage = responseData['message'] ?? 'No data available';
         });
       }
     } catch (error) {
@@ -143,6 +156,8 @@ class _midMarksState extends State<midMarks> {
     }
   }
 
+  // Remove the buildExamDetails method if it's no longer needed
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -153,7 +168,7 @@ class _midMarksState extends State<midMarks> {
             color: Colors.white,
           ),
           onPressed: () {
-            Navigator.of(context).pop(); // Add navigation functionality
+            Navigator.of(context).pop();
           },
         ),
         title: const Text(
@@ -162,84 +177,169 @@ class _midMarksState extends State<midMarks> {
         ),
         backgroundColor: Colors.lightGreen,
       ),
-      body:
-           SingleChildScrollView(
-        child: Container(
-          width: double.maxFinite,
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child:
-                DropdownButtonFormField<String>(
-                  decoration: InputDecoration(
-                    labelText: "Select Sem",
-                    border: OutlineInputBorder(),
-                    contentPadding: EdgeInsets.symmetric(horizontal: 10),
-                  ),
-                  value: selectedExamName,
-                  isExpanded: true,
-                  onChanged: (String? newValue) {
-                    setState(() {
-                      selectedExamName = newValue!;
-                      fetchUpdatedExamDetails(
-                        examList.firstWhere((element) => element['examName'] == newValue)['examId']
-                            .toString(),
-                      );
-                    });
-                  },
-                  items: examList
-                      .map(
-                        (exam) => DropdownMenuItem<String>(
-                      value: exam['examName'],
-                      child: Text(exam['examName']),
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Container(
+                width: double.maxFinite,
+                child: Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: DropdownButtonFormField<String>(
+                        decoration: InputDecoration(
+                          labelText: "Select Exam",
+                          border: OutlineInputBorder(),
+                          contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                        ),
+                        value: selectedExamName,
+                        isExpanded: true,
+                        onChanged: (String? newValue) {
+                          setState(() {
+                            selectedExamName = newValue;
+                            // Find the exam element matching the newValue
+                            var examElement = examList.firstWhere(
+                              (element) => element['examName'] == newValue,
+                              orElse: () => null,
+                            );
+                            if (examElement != null) {
+                              var examId = examElement['examId'].toString();
+                              fetchUpdatedExamDetails(examId);
+                            } else {
+                              // Handle the case where examElement is null
+                              errorMessage = 'Exam not found';
+                              midExamResultsDisplayListData = null;
+                            }
+                          });
+                        },
+                        items: examList
+                            .map(
+                              (exam) => DropdownMenuItem<String>(
+                                value: exam['examName'],
+                                child: Text(exam['examName']),
+                              ),
+                            )
+                            .toList(),
+                        icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+                      ),
                     ),
-                  )
-                      .toList(),
-                  icon: Icon(Icons.arrow_drop_down, color: Colors.black),
+                    if (midExamResultsDisplayListData != null &&
+                        midExamResultsDisplayListData!.isNotEmpty)
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: NeverScrollableScrollPhysics(),
+                        itemCount: midExamResultsDisplayListData!.length,
+                        itemBuilder: (context, index) {
+                          var item = midExamResultsDisplayListData![index];
+                          return Container(
+                            margin: EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 10),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: Colors.black),
+                            ),
+                            child: ExpansionTile(
+                              title: Text(
+                                item['subName']?.toString() ?? 'N/A',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              subtitle: Text(
+                                'Total Marks: ${item['totalTotMarks']?.toString() ?? 'N/A'}',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.yellow[800],
+                                ),
+                              ),
+                              children: [
+                                // Display Exam Division Details if available
+                                if (item['examDivDetails'] != null &&
+                                    item['examDivDetails'].isNotEmpty)
+                                  ...item['examDivDetails']
+                                      .map<Widget>((detail) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16.0),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Divider(),
+                                          Text(
+                                            detail['examDivName']?.toString() ??
+                                                'N/A',
+                                            style: TextStyle(
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          // Marks and Max Marks Labels for each Exam Division
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Marks',
+                                                style: TextStyle(
+                                                    color: Colors.yellow[800],
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                'Max Marks',
+                                                style: TextStyle(
+                                                    color: Colors.yellow[800],
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
+                                          ),
+                                          // Marks and Max Marks Values for each Exam Division
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                '${detail['totMarks']?.toString() ?? 'N/A'}',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                              Text(
+                                                '${detail['intMax']?.toString() ?? 'N/A'}',
+                                                style: TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold),
+                                              ),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            height: 20,
+                                          )
+                                        ],
+                                      ),
+                                    );
+                                  }).toList(),
+                              ],
+                            ),
+                          );
+                        },
+                      )
+                    else if (errorMessage.isNotEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child:
+                            Text(errorMessage, style: TextStyle(fontSize: 16)),
+                      )
+                    else
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Text('No data available',
+                            style: TextStyle(fontSize: 16)),
+                      ),
+                  ],
                 ),
               ),
-              if (intMarksDetailsList1Data != null)
-                DataTable(
-                  columns: [
-                    DataColumn(label: Text('Subject Name')),
-                    DataColumn(label: Text('Marks')),
-                  ],
-                  rows: [
-                    DataRow(cells: [
-                      DataCell(Text(intMarksDetailsList1Data!['subjectName'])),
-                      DataCell(Text(intMarksDetailsList1Data!['marks'])),
-                    ]),
-                  ],
-                )
-              else if (errorMessage.isNotEmpty)
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(errorMessage, style: TextStyle(fontSize: 16)),
-                )
-              else
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text('No data available', style: TextStyle(fontSize: 16)),
-                ),
-            ],
-          ),
-        ),
-      ),
+            ),
     );
   }
 }
 
-void main() {
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => UserProvider()),
-        ChangeNotifierProvider(create: (_) => BetStudentProvider()),
-      ],
-      child: MaterialApp(
-        home: midMarks(),
-      ),
-    ),
-  );
-}
+

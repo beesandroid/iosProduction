@@ -1,21 +1,16 @@
 import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:http/http.dart' as http;
 import 'package:intl/intl.dart';
-import 'package:open_file/open_file.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:paytm_allinonesdk/paytm_allinonesdk.dart';
-import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../views/MainPage.dart';
-import '../views/PROVIDER.dart';
-import '../views/betprovider.dart';
+
 
 class SupplyFeePayment extends StatefulWidget {
   const SupplyFeePayment({Key? key}) : super(key: key);
@@ -53,8 +48,7 @@ class _SupplyFeePaymentState extends State<SupplyFeePayment> {
   }
 
   String generateRandomText(int length) {
-    const _chars =
-        'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const _chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
     final _random = Random();
     return String.fromCharCodes(Iterable.generate(
         length, (_) => _chars.codeUnitAt(_random.nextInt(_chars.length))));

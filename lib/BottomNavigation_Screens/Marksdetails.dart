@@ -226,7 +226,7 @@ class _MarksdetailsState extends State<Marksdetails> {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => midMarks()));
+                                    builder: (context) => MidMarks()));
                           } else if (index == 1) {
                             Navigator.push(
                               context,

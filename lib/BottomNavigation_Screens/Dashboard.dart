@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:betplus_ios/Marks_Details/midmarks.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -9,8 +9,8 @@ import '../Appdrawer/customDrawer.dart';
 import '../Fee_payment/regular_payment.dart';
 import '../Marks_Details/overallperf.dart';
 import '../Marks_Details/overallperformance.dart';
-import '../fcm.dart';
-import '../firebase_options.dart';
+
+import '../Marks_Details/recentmid.dart';
 import '../views/DueSubjects.dart';
 import '../views/reportIssues.dart';
 
@@ -33,6 +33,7 @@ class _DashboardState extends State<Dashboard> {
   String sgpa = '';
   String examFee = '';
   String recentSem = '';
+  String recentMid = '';
   String subjectsDue = '';
   String totalSubjects = '';
   String gradeSystem = '';
@@ -452,6 +453,48 @@ class _DashboardState extends State<Dashboard> {
                     ],
                   ),
                   Row(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(8),
+                        child: GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => recentmid(
+                                    recentMid:
+                                    recentMid), // Replace with your screen
+                              ),
+                            );
+                          },
+                          child: Container(
+                            height: 90,
+                            width: 170,
+                            decoration: BoxDecoration(
+                              border: Border.all(color: Colors.grey),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Recent Mid",
+                                    style: TextStyle(
+                                      color: Color(0xFFFF9800),
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(recentMid),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Padding(
@@ -537,6 +580,7 @@ class _DashboardState extends State<Dashboard> {
             sgpa = details['sgpa'] ?? '';
             examFee = details['examFee'] ?? '';
             recentSem = details['recentSem'] ?? '';
+            recentMid=details['recentMid']??'';
             subjectsDue = details['subjectsDue'] ?? '';
             totalSubjects = details['totalSubjects'] ?? '';
             gradeSystem = details['gradeSystem'] ?? '';

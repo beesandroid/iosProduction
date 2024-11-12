@@ -164,7 +164,7 @@ class _ExternalTimeTablePageState extends State<ExternalTimeTablePage> {
     String betCourseId = prefs.getString('betCourseId') ?? '';
     int schoolId = prefs.getInt('schoolId') ?? 0;
     int studId = prefs.getInt('studId') ?? 0;
-    String betBranchcode = prefs.getString('betBranchcode') ?? '';
+    String betBranchcode = prefs.getString('betBranchCode') ?? '';
 
     // Construct the request body
     final requestBody = {

@@ -185,8 +185,7 @@ class _InternalViewState extends State<InternalView> {
     String betCurid = prefs.getString('betCurid') ??'';
 
     String betCourseId = prefs.getString('betCourseId') ?? '';
-    final url =
-        'https://mritsexams.com/CoreApi/Android/InternalExamMonthYearDropDown';
+    final url = 'https://mritsexams.com/CoreApi/Android/InternalExamMonthYearDropDown';
     final requestPayload = {
       "GrpCode": grpCodeValue,
       "CollegeId": "0001",

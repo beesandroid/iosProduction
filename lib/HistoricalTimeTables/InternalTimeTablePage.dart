@@ -29,6 +29,7 @@ class _InternalTimeTablePageState extends State<InternalTimeTablePage> {
     String grpCodeValue = prefs.getString('grpCode') ?? '';
     String betCourseId = prefs.getString('betCourseId') ?? '';
     String betCurid = prefs.getString('betCurid') ?? '';
+    print(betCurid);
 
     final response = await http.post(
       Uri.parse('https://mritsexams.com/CoreApi/Android/InternalExamDropDown'),
@@ -77,8 +78,10 @@ class _InternalTimeTablePageState extends State<InternalTimeTablePage> {
         "CurId": betCurid,
       }),
     );
+    print("examid"+examId.toString());
 
     if (response.statusCode == 200) {
+      print("www"+response.body);
       final List<dynamic> internalExamDivisionList =
       jsonDecode(response.body)['internalExamDivisionDropDownList'];
 
@@ -102,8 +105,10 @@ class _InternalTimeTablePageState extends State<InternalTimeTablePage> {
     String betBranchCode = prefs.getString('betBranchCode') ?? '';
     int studId = prefs.getInt('studId') ?? 0;
     String betSem = prefs.getString('betSem') ?? '';
+    print("betCourseId"+betCourseId.toString());
+    print("betBranchCode"+betBranchCode.toString());
+    print("betSem"+betSem.toString());
 
-    // Prepare the request body
     Map<String, dynamic> requestBody = {
       "GrpCode": grpCodeValue,
       "ColCode": "pss",
@@ -119,7 +124,7 @@ class _InternalTimeTablePageState extends State<InternalTimeTablePage> {
     };
 
     // Print the request body for debugging
-    print('Request Body: $requestBody');
+    print('Request Body22222: $requestBody');
 
     final response = await http.post(
       Uri.parse('https://mritsexams.com/CoreApi/Android/InternalExamTimeTableDisplay'),
